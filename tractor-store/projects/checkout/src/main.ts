@@ -8,17 +8,13 @@ import {
   globalThisStorageEntry,
 } from '@softarc/native-federation-orchestrator/options';
 
-const manifest = {
-  '@tractor-store/explore': 'http://localhost:4201/remoteEntry.json',
-};
-
 let showErrors = false;
 
 fetch('./env.config.json')
   .then((resp) => resp.json())
   .then(async (cfg) => {
     showErrors = !cfg.production;
-    const nf: NativeFederationResult = await initFederation(manifest, {
+    const nf: NativeFederationResult = await initFederation(cfg.manifest ?? {}, {
       ...useShimImportMap({ shimMode: true }),
       logger: consoleLogger,
       storage: globalThisStorageEntry,
