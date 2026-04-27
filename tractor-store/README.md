@@ -1,68 +1,126 @@
-# Native Federation v4 Demo
+# The Tractor Store - Angular & Native Federation
 
-> [!WARNING]
-> This is a demo for native-federation v4 which is currently in beta. For upgrading from v3 to v4, please refer to our [Migration Guide](https://github.com/native-federation/angular-adapter/blob/main/MIGRATION_GUIDE.md).
+A micro frontends sample implementation of [The Tractor Store](https://micro-frontends.org/tractor-store/) built with Angular 21 (zoneless), [Native Federation v4][https://github.com/native-federation/angular-adapter] and Web Components. It's based on the [Blueprint](https://github.com/neuland/tractor-store-blueprint).
 
-## What is Native Federation?
+**Live Demo:** [native-federation.github.io/angular-examples](https://native-federation.github.io/angular-examples/)
 
-Native Federation is a framework-agnostic implementation of the Module Federation concept, allowing you to build micro-frontends that can be loaded dynamically at runtime. Version 4 brings improved performance and better developer experience.
+## About This Implementation
 
-## Project Structure
+### Technologies
 
-This workspace contains multiple micro-frontends:
+List of techniques used in this implementation.
 
-- **host** - Host applications that load remote micro-frontends
-- **mfe1**, **mfe2**, **mfe3** - Remote micro-frontend applications
-- **ng20/** - A separate Angular 20 workspace with `mfe4` to demonstrate cross-version compatibility
+| Aspect                     | Solution                                                |
+| -------------------------- | ------------------------------------------------------- |
+| 🛠️ Frameworks, Libraries   | [angular] (zoneless), [native-federation-v4][nf-v4]     |
+| 📝 Rendering               | CSR (Client-Side Rendering)                             |
+| 🐚 Application Shell       | Host app with route-based shell components              |
+| 🧩 Client-Side Integration | Custom Elements ([@angular/elements]) loaded as remotes |
+| 🧩 Server-Side Integration | None (static hosting)                                   |
+| 📣 Communication           | Custom Events, Shared Angular services via DI           |
+| 🗺️ Navigation              | SPA inside host, router-sync across remotes             |
+| 🎨 Styling                 | Self-Contained SCSS (One bundle per remote)             |
+| 🍱 Design System           | Shared UI library (`@tractor-store/ui`)                 |
+| 🔮 Discovery               | Runtime manifest (`env.config.json`)                    |
+| 🚚 Deployment              | Static (GitHub Pages, GitHub Actions)                   |
+| 👩‍💻 Local Development       | [angular-cli], [concurrently], [http-server]            |
 
-## Getting Started
+[angular]: https://angular.dev/
+[nf-v4]: https://www.npmjs.com/package/@angular-architects/native-federation-v4
+[@angular/elements]: https://angular.dev/guide/elements
+[angular-cli]: https://angular.dev/tools/cli
+[concurrently]: https://github.com/open-cli-tools/concurrently
+[http-server]: https://github.com/http-party/http-server
 
-### Install dependencies
+### Project Structure
+
+The workspace contains four Angular applications and two libraries:
+
+```
+tractor-store/
+├── projects/
+│   ├── host/        # Shell application — owns routing & remote loading
+│   ├── explore/     # Catalog, recommendations, store picker
+│   ├── decide/      # Product detail page
+│   └── checkout/    # Cart, checkout, mini-cart
+├── libs/
+│   ├── internal/    # federation, logging and router-sync helpers
+│   └── shared/ui/   # @tractor-store/ui — buttons, spinner, …
+└── public/cdn/      # Static fonts and images (served at :3000 in dev)
+```
+
+Each remote (`explore`, `decide`, `checkout`) exposes its top-level component plus a handful of fragment components (e.g. `Header`, `Footer`, `MiniCart`) registered as custom elements (`mfe-<remote>`, `mfe-<remote>-<fragment>`) via `@angular/elements`. The host loads these on demand through Native Federation and renders them inside route-based shell components.
+
+### Discovery
+
+Each app fetches its `env.config.json` at runtime, which lists the remote manifest plus environment values (`apiUrl`, `cdnUrl`, `production`). The CI workflow rewrites these files for the deployed environment so the same build works locally and on GitHub Pages.
+
+### Limitations
+
+This implementation focuses on the micro frontends aspects. The backend is mocked, error boundaries are minimal, and bundle-size or chunking optimizations are out of scope. In a real-world project these aspects deserve more attention.
+
+### Todos
+
+- [ ] Web performance optimizations (preload critical remotes, deeper code splitting)
+- [ ] Error boundaries / fallback UI when a remote fails to load
+- [ ] Wire a real backend instead of static fixtures
+- [ ] Show selected store on checkout page
+
+## How to run locally
+
+Clone the repository and install dependencies (the workspace uses pnpm):
 
 ```bash
+git clone git@github.com:native-federation/angular-examples.git
+cd angular-examples/tractor-store
 pnpm install
 ```
 
-### Start the development servers
+Start all four apps and the static CDN concurrently:
 
 ```bash
-pnpm start
+pnpm start:all
 ```
 
-For cross-Angular version testing (loading mfe4 from Angular 20):
+This boots:
+
+| Service         | Port |
+| --------------- | ---- |
+| host (shell)    | 4200 |
+| explore         | 4201 |
+| decide          | 4202 |
+| checkout        | 4203 |
+| cdn (fonts/img) | 3000 |
+
+Open http://localhost:4200 in your browser to see the integrated application. Each remote can also be opened standalone on its own port — Native Federation will load the sibling remotes it needs from the URLs declared in that remote's `public/env.config.json`.
+
+You can also serve a single app:
 
 ```bash
-cd ng20
-pnpm install
-pnpm start
+pnpm ng serve host       # or explore / decide / checkout
 ```
 
-Open your browser at `http://localhost:4200/`.
+### Testing
 
-## Key Configuration
+Unit and component tests are written with [Vitest] using `jsdom`. Run the full suite per project:
 
-Each micro-frontend has a `federation.config.js` that defines:
-
-- **name** - Unique identifier for the remote
-- **exposes** - Modules/components available for other apps to consume
-- **shared** - Dependencies shared between host and remotes
-
-Example from a remote (`mfe1`):
-
-```javascript
-export default withNativeFederation({
-  name: "team/mfe1",
-  exposes: {
-    "./Bootstrap": "./projects/mfe1/src/bootstrap.ts",
-    "./Component": "./projects/mfe1/src/app/app.component.ts",
-  },
-  shared: {
-    ...shareAll({ singleton: true, strictVersion: true, requiredVersion: "auto" }),
-  },
-});
+```bash
+pnpm ng test host --watch=false
 ```
 
-## Learn More
+[Vitest]: https://vitest.dev/
 
-- [Native Federation Documentation](https://www.npmjs.com/package/@softarc/native-federation)
-- [@angular-architects/native-federation](https://www.npmjs.com/package/@angular-architects/native-federation)
+## Deployment
+
+The app is published to GitHub Pages by [`.github/workflows/deploy-tractor-store.yml`](../.github/workflows/deploy-tractor-store.yml) on every push to `main` that touches `tractor-store/**`. The workflow:
+
+1. Builds the four apps with the appropriate `--base-href`.
+2. Assembles a single `_site/` directory with `host` at the root and the remotes under `/explore`, `/decide`, `/checkout`.
+3. Rewrites the `env.config.json` files so each app discovers its siblings via the deployed base path.
+4. Pushes the result to the `gh-pages` branch.
+
+Trigger a deploy manually from the **Actions** tab via _Run workflow_.
+
+## About The Authors
+
+[The Native Federation team](https://native-federation.com/)
