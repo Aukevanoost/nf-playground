@@ -18,6 +18,7 @@
 					"builder": "@angular-architects/native-federation-v4:build",
 					"options": {
             			"tsConfig": "projects/mfe1/tsconfig.federation.json",
+						"integrity": true,
                         "cacheExternalArtifacts": true
                     },
 					"configurations": {
@@ -37,7 +38,8 @@
 						"target": "mfe1:serve-original:development",
             			"tsConfig": "projects/mfe1/tsconfig.federation.json",
 						"cacheExternalArtifacts": true,
-						"rebuildDelay": 0,
+						"rebuildDelay": 500,
+						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
@@ -130,6 +132,7 @@
 					"builder": "@angular-architects/native-federation-v4:build",
 					"options": {
             			"tsConfig": "projects/mfe2/tsconfig.federation.json",
+						"integrity": true,
                         "cacheExternalArtifacts": true
                     },
 					"configurations": {
@@ -149,7 +152,8 @@
 						"target": "mfe2:serve-original:development",
             			"tsConfig": "projects/mfe2/tsconfig.federation.json",
 						"cacheExternalArtifacts": false,
-						"rebuildDelay": 0,
+						"rebuildDelay": 500,
+						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
@@ -256,6 +260,7 @@
 					"options": {
                         "cacheExternalArtifacts": false,
             			"tsConfig": "projects/host/tsconfig.federation.json",
+						"integrity": true,
 						"entryPoints": ["projects/host/src/main.ts"]
                     },
 					"configurations": {
@@ -275,7 +280,8 @@
 						"target": "host:serve-original:development",
             			"tsConfig": "projects/host/tsconfig.federation.json",
 						"cacheExternalArtifacts": false,
-						"rebuildDelay": 0,
+						"rebuildDelay": 500,
+						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
@@ -381,7 +387,8 @@
 					"builder": "@angular-architects/native-federation-v4:build",
 					"options": {
              			"tsConfig": "projects/mfe3/tsconfig.federation.json",
-                       "cacheExternalArtifacts": false
+						"integrity": true,
+                       	"cacheExternalArtifacts": true
                     },
 					"configurations": {
 						"production": {
@@ -399,8 +406,9 @@
 					"options": {
 						"target": "mfe3:serve-original:development",
             			"tsConfig": "projects/mfe3/tsconfig.federation.json",
-						"cacheExternalArtifacts": false,
-						"rebuildDelay": 0,
+						"cacheExternalArtifacts": true,
+						"rebuildDelay": 500,
+						"integrity": true,
 						"dev": true,
 						"port": 0
 					}

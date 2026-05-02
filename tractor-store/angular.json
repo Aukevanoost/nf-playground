@@ -17,7 +17,8 @@
         "build": {
           "builder": "@angular-architects/native-federation-v4:build",
           "options": {
-            "cacheExternalArtifacts": false,
+						"cacheExternalArtifacts": true,
+						"integrity": true,
             "tsConfig": "projects/host/tsconfig.federation.json",
             "entryPoints": [
               "projects/host/src/main.ts"
@@ -39,8 +40,9 @@
           "options": {
             "target": "host:serve-original:development",
             "tsConfig": "projects/host/tsconfig.federation.json",
-            "cacheExternalArtifacts": false,
-            "rebuildDelay": 0,
+						"cacheExternalArtifacts": true,
+						"rebuildDelay": 500,
+						"integrity": true,
             "dev": true,
             "port": 0
           }
@@ -134,7 +136,8 @@
           "options": {
             "projectName": "explore",
             "tsConfig": "projects/explore/tsconfig.federation.json",
-            "cacheExternalArtifacts": true,
+						"cacheExternalArtifacts": true,
+						"integrity": true,
             "entryPoints": [
               "projects/explore/src/main.ts"
             ]
@@ -156,8 +159,9 @@
             "projectName": "explore",
             "tsConfig": "projects/explore/tsconfig.federation.json",
             "target": "explore:serve-original:development",
-            "rebuildDelay": 500,
-            "cacheExternalArtifacts": true,
+						"cacheExternalArtifacts": true,
+						"rebuildDelay": 500,
+						"integrity": true,
             "dev": true,
             "devServer": true,
             "port": 0,
@@ -248,7 +252,8 @@
           "options": {
             "projectName": "decide",
             "tsConfig": "projects/decide/tsconfig.federation.json",
-            "cacheExternalArtifacts": true,
+						"cacheExternalArtifacts": true,
+						"integrity": true,
             "entryPoints": [
               "projects/decide/src/main.ts"
             ]
@@ -270,8 +275,9 @@
             "projectName": "decide",
             "tsConfig": "projects/decide/tsconfig.federation.json",
             "target": "decide:serve-original:development",
-            "rebuildDelay": 500,
-            "cacheExternalArtifacts": true,
+						"cacheExternalArtifacts": true,
+						"rebuildDelay": 500,
+						"integrity": true,
             "dev": true,
             "devServer": true,
             "port": 0,
@@ -362,7 +368,8 @@
           "options": {
             "projectName": "checkout",
             "tsConfig": "projects/checkout/tsconfig.federation.json",
-            "cacheExternalArtifacts": true,
+						"cacheExternalArtifacts": true,
+						"integrity": true,
             "entryPoints": [
               "projects/checkout/src/main.ts"
             ]
@@ -384,8 +391,9 @@
             "projectName": "checkout",
             "tsConfig": "projects/checkout/tsconfig.federation.json",
             "target": "checkout:serve-original:development",
-            "rebuildDelay": 500,
-            "cacheExternalArtifacts": true,
+						"cacheExternalArtifacts": true,
+						"rebuildDelay": 500,
+						"integrity": true,
             "dev": true,
             "devServer": true,
             "port": 0,

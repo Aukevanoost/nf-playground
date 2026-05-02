@@ -16,7 +16,10 @@
 			"architect": {
 				"build": {
 					"builder": "@angular-architects/native-federation-v4:build",
-					"options": {},
+					"options": {
+						"integrity": true,
+                       	"cacheExternalArtifacts": true
+					},
 					"configurations": {
 						"production": {
 							"tsConfig": "projects/mfe4/tsconfig.app.json",
@@ -34,7 +37,9 @@
 					"options": {
 						"target": "mfe4:serve-original:development",
 						"tsConfig": "projects/mfe4/tsconfig.app.json",
-						"rebuildDelay": 0,
+						"cacheExternalArtifacts": true,
+						"rebuildDelay": 500,
+						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
