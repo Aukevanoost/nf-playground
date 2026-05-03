@@ -18,7 +18,6 @@
 					"builder": "@angular-architects/native-federation-v4:build",
 					"options": {
             			"tsConfig": "projects/mfe1/tsconfig.federation.json",
-						"integrity": true,
                         "cacheExternalArtifacts": true
                     },
 					"configurations": {
@@ -39,7 +38,6 @@
             			"tsConfig": "projects/mfe1/tsconfig.federation.json",
 						"cacheExternalArtifacts": true,
 						"rebuildDelay": 500,
-						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
@@ -132,7 +130,6 @@
 					"builder": "@angular-architects/native-federation-v4:build",
 					"options": {
             			"tsConfig": "projects/mfe2/tsconfig.federation.json",
-						"integrity": true,
                         "cacheExternalArtifacts": true
                     },
 					"configurations": {
@@ -153,7 +150,6 @@
             			"tsConfig": "projects/mfe2/tsconfig.federation.json",
 						"cacheExternalArtifacts": false,
 						"rebuildDelay": 500,
-						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
@@ -260,7 +256,6 @@
 					"options": {
                         "cacheExternalArtifacts": false,
             			"tsConfig": "projects/host/tsconfig.federation.json",
-						"integrity": true,
 						"entryPoints": ["projects/host/src/main.ts"]
                     },
 					"configurations": {
@@ -281,7 +276,6 @@
             			"tsConfig": "projects/host/tsconfig.federation.json",
 						"cacheExternalArtifacts": false,
 						"rebuildDelay": 500,
-						"integrity": true,
 						"dev": true,
 						"port": 0
 					}
@@ -387,7 +381,6 @@
 					"builder": "@angular-architects/native-federation-v4:build",
 					"options": {
              			"tsConfig": "projects/mfe3/tsconfig.federation.json",
-						"integrity": true,
                        	"cacheExternalArtifacts": true
                     },
 					"configurations": {
@@ -408,7 +401,6 @@
             			"tsConfig": "projects/mfe3/tsconfig.federation.json",
 						"cacheExternalArtifacts": true,
 						"rebuildDelay": 500,
-						"integrity": true,
 						"dev": true,
 						"port": 0
 					}

@@ -24,6 +24,7 @@ export default withNativeFederation({
   ],
 
   features: {
-    denseChunking: true
+    denseChunking: true,
+    integrityHashes: true
   }
 });
