@@ -27,7 +27,6 @@ export default withNativeFederation({
     'rxjs/webSocket',
     // Add further packages you don't need at runtime
   ],
-
   features: { 
     denseChunking: true,
     integrityHashes: true

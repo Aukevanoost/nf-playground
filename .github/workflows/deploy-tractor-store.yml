@@ -54,35 +54,32 @@ jobs:
           cp -r dist/decide/browser   _site/decide
           cp -r dist/checkout/browser _site/checkout
           cp -r public/cdn _site/cdn
+          cp _site/index.html _site/404.html
           touch _site/.nojekyll
 
-      - name: Rewrite localhost CDN URLs in static assets
+      - name: Rewrite env.config.json and federation.manifest.json files
         run: |
-          # Replace the dev CDN host with the deployed base path in the
-          # @font-face url(...) inlined into the critical CSS and the bundled
-          # CSS files.
-          find _site -maxdepth 2 -type f \( -name '*.html' -o -name '*.css' \) \
-            -exec sed -i "s|http://localhost:3000|${BASE_PATH}|g" {} +
-          cp _site/index.html _site/404.html
+          # main.ts in each app fetches env.config.json and
+          # federation.manifest.json separately, so we rewrite both per app.
+          # env.config.json shape: { production, apiUrl, scope, cdnUrl }
+          # federation.manifest.json shape: { "<remote>": "<remoteEntryUrl>", ... }
 
-      - name: Rewrite env.config.json files
-        run: |
-          jq --arg b "${BASE_PATH}" '{
-            manifest: {
-              "@tractor-store/explore":  ($b + "/explore/remoteEntry.json"),
-              "@tractor-store/decide":   ($b + "/decide/remoteEntry.json"),
-              "@tractor-store/checkout": ($b + "/checkout/remoteEntry.json")
-            },
-            production: true,
-            apiUrl: "",
-            scope: $b,
-            cdnUrl: $b
-          }' _site/env.config.json > _site/env.config.json.tmp
+          # Host
+          jq --arg b "${BASE_PATH}" \
+             '{ production: true, apiUrl: "", scope: $b, cdnUrl: $b }' \
+             _site/env.config.json > _site/env.config.json.tmp
           mv _site/env.config.json.tmp _site/env.config.json
 
-          # Per-remote manifests: list which sibling remotes each app loads
-          # when running standalone. Mirrors the dev-time entries in each
-          # remote's public/env.config.json.
+          jq --arg b "${BASE_PATH}" '{
+            "@tractor-store/explore":  ($b + "/explore/remoteEntry.json"),
+            "@tractor-store/decide":   ($b + "/decide/remoteEntry.json"),
+            "@tractor-store/checkout": ($b + "/checkout/remoteEntry.json")
+          }' _site/federation.manifest.json > _site/federation.manifest.json.tmp
+          mv _site/federation.manifest.json.tmp _site/federation.manifest.json
+
+          # Per-remote: scope is the remote's own folder; manifest lists the
+          # sibling remotes this app loads when running standalone. Mirrors
+          # the dev-time entries in each remote's public/federation.manifest.json.
           declare -A remote_manifest=(
             [explore]='{"@tractor-store/checkout": "/checkout/remoteEntry.json"}'
             [decide]='{"@tractor-store/explore": "/explore/remoteEntry.json", "@tractor-store/checkout": "/checkout/remoteEntry.json"}'
@@ -90,11 +87,14 @@ jobs:
           )
           for app in explore decide checkout; do
             jq --arg b "${BASE_PATH}" --arg s "${BASE_PATH}/$app" \
-               --argjson m "${remote_manifest[$app]}" \
-               '{ manifest: ($m | with_entries(.value = $b + .value)),
-                  production: true, apiUrl: "", scope: $s, cdnUrl: $b }' \
+               '{ production: true, apiUrl: "", scope: $s, cdnUrl: $b }' \
                "_site/$app/env.config.json" > "_site/$app/env.config.json.tmp"
             mv "_site/$app/env.config.json.tmp" "_site/$app/env.config.json"
+
+            jq --arg b "${BASE_PATH}" --argjson m "${remote_manifest[$app]}" \
+               '$m | with_entries(.value = $b + .value)' \
+               "_site/$app/federation.manifest.json" > "_site/$app/federation.manifest.json.tmp"
+            mv "_site/$app/federation.manifest.json.tmp" "_site/$app/federation.manifest.json"
           done
 
       - name: Publish to gh-pages branch

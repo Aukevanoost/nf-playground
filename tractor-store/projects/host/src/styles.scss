@@ -1,10 +1,5 @@
-@font-face {
-  font-family: 'Raleway';
-  src: url('http://localhost:3000/cdn/font/raleway-regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+// The Raleway face is loaded from env.cdnUrl in bootstrap.ts via the
+// FontFace API so it works in any deployed environment, not just local dev.
 
 * {
   box-sizing: border-box;

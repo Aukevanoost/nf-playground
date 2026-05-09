@@ -4,7 +4,8 @@ export default withNativeFederation({
 
   name: '@tractor-store/decide',
   exposes: {
-    './Component': './projects/decide/src/app/bootstrap.ts',
+    'mfe-product': './projects/decide/src/features/product/bootstrap.ts',
+    'nav-contribution': './projects/decide/src/core/nav-contribution.ts',
   },
   shared: {
     ...shareAll(
@@ -16,6 +17,7 @@ export default withNativeFederation({
       }
     ),
   },
+  sharedMappings: ["@internal/navigation", "@internal/ui", "@internal/logging"],
   skip: [
     'rxjs/ajax',
     'rxjs/fetch',

@@ -1,0 +1,19 @@
+<mfe-header></mfe-header>
+<main class="c_CartPage">
+  <h2>Basket</h2>
+  <ul class="c_CartPage__lineItems" role="list">
+    @for (item of lineItems(); track item.sku) {
+    <app-line-item [item]="item"></app-line-item>
+    }
+  </ul>
+  <hr />
+  <p class="c_CartPage__total">Total: {{ total() }} Ø</p>
+
+  <div class="c_CartPage__buttons">
+    <ts-button variant="primary" navLink="checkout.checkout">Checkout</ts-button>
+    <ts-button variant="secondary" navLink="explore.home">Continue Shopping</ts-button>
+  </div>
+
+  <mfe-recommendations [attr.skus]="skusCsv()"></mfe-recommendations>
+</main>
+<mfe-footer></mfe-footer>

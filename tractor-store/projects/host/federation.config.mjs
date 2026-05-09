@@ -13,6 +13,7 @@ export default withNativeFederation({
       }
     ),
   },
+  sharedMappings: ["@internal/navigation", "@internal/ui", "@internal/logging"],
   skip: [
     'rxjs/ajax', 
     'rxjs/fetch',

@@ -4,9 +4,12 @@ export default withNativeFederation({
 
   name: '@tractor-store/checkout',
   exposes: {
-    './Component': './projects/checkout/src/app/bootstrap.ts',
-    './MiniCart': './projects/checkout/src/app/components/mini-cart/bootstrap.ts',
-    './AddToCart': './projects/checkout/src/app/components/add-to-cart/bootstrap.ts',
+    'mfe-cart': './projects/checkout/src/features/cart/bootstrap.ts',
+    'mfe-checkout': './projects/checkout/src/features/checkout/bootstrap.ts',
+    'mfe-thanks': './projects/checkout/src/features/thanks/bootstrap.ts',
+    'mfe-mini-cart': './projects/checkout/src/features/mini-cart/bootstrap.ts',
+    'mfe-add-to-cart': './projects/checkout/src/features/add-to-cart/bootstrap.ts',
+    'nav-contribution': './projects/checkout/src/core/nav-contribution.ts',
   },
   shared: {
     ...shareAll(
@@ -18,6 +21,7 @@ export default withNativeFederation({
       }
     ),
   },
+  sharedMappings: ["@internal/navigation", "@internal/ui", "@internal/logging"],
   skip: [
     'rxjs/ajax',
     'rxjs/fetch',

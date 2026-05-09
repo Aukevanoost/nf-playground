@@ -71,16 +71,6 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `mcp__angular-cli__list_projects` to discover workspace structure before making changes.
 - Use `mcp__angular-cli__search_documentation` for Angular concept questions.
 
-### Adding New Apps
-
-- When creating a new micro frontend app, you MUST use the `next-create-micro-frontend` skill.
-
-### API Communication
-
-- When setting up or consuming the OpenAPI contract, you MUST use the `openapi` skill.
-- NEVER write `HttpClient` calls by hand — always use the client generated from the spec.
-- When connecting to a backend API, you MUST use the default apiUrl: `http://localhost:4444` in development, do NOT hardcode any other URLs.
-
 ### Requirements
 
 - The bootstrap module registers the app as a custom element (`mfe-<project>`) via `@angular/elements`.

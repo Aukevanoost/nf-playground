@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -31,9 +31,15 @@
         text-transform: uppercase;
         opacity: 0.85;
       }
-      @keyframes app-boot-spin { to { transform: rotate(360deg); } }
+      @keyframes app-boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
-        .app-boot__circle { animation-duration: 2.4s; }
+        .app-boot__circle {
+          animation-duration: 2.4s;
+        }
       }
     </style>
   </head>

@@ -18,9 +18,9 @@ List of techniques used in this implementation.
 | 🧩 Client-Side Integration | Custom Elements ([@angular/elements]) loaded as remotes |
 | 🧩 Server-Side Integration | None (static hosting)                                   |
 | 📣 Communication           | Custom Events, Shared Angular services via DI           |
-| 🗺️ Navigation              | SPA inside host, router-sync across remotes             |
+| 🗺️ Navigation              | SPA inside host, intent + URL bus across remotes        |
 | 🎨 Styling                 | Self-Contained SCSS (One bundle per remote)             |
-| 🍱 Design System           | Shared UI library (`@tractor-store/ui`)                 |
+| 🍱 Design System           | Shared UI library (`@internal/ui`)                      |
 | 🔮 Discovery               | Runtime manifest (`env.config.json`)                    |
 | 🚚 Deployment              | Static (GitHub Pages, GitHub Actions)                   |
 | 👩‍💻 Local Development       | [angular-cli], [concurrently], [http-server]            |
@@ -34,19 +34,21 @@ List of techniques used in this implementation.
 
 ### Project Structure
 
-The workspace contains four Angular applications and two libraries:
+The workspace contains four Angular applications and four libraries:
 
 ```
 tractor-store/
 ├── projects/
-│   ├── host/        # Shell application — owns routing & remote loading
-│   ├── explore/     # Catalog, recommendations, store picker
-│   ├── decide/      # Product detail page
-│   └── checkout/    # Cart, checkout, mini-cart
+│   ├── host/         # Shell application — owns routing & remote loading
+│   ├── explore/      # Catalog, recommendations, store picker
+│   ├── decide/       # Product detail page
+│   └── checkout/     # Cart, checkout, mini-cart
 ├── libs/
-│   ├── internal/    # federation, logging and router-sync helpers
-│   └── shared/ui/   # @tractor-store/ui — buttons, spinner, …
-└── public/cdn/      # Static fonts and images (served at :3000 in dev)
+│   ├── federation/   # @internal/federation — env config & CDN helpers
+│   ├── logging/      # @internal/logging — console logger service
+│   ├── navigation/   # @internal/navigation — nav bus, link/route directives
+│   └── ui/           # @internal/ui — buttons, spinner, …
+└── public/cdn/       # Static fonts and images (served at :3000 in dev)
 ```
 
 Each remote (`explore`, `decide`, `checkout`) exposes its top-level component plus a handful of fragment components (e.g. `Header`, `Footer`, `MiniCart`) registered as custom elements (`mfe-<remote>`, `mfe-<remote>-<fragment>`) via `@angular/elements`. The host loads these on demand through Native Federation and renders them inside route-based shell components.

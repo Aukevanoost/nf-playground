@@ -3,44 +3,31 @@ import {
   InjectionToken,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { NativeFederationResult } from '@softarc/native-federation-orchestrator';
-import { provideRouterSync } from '@internal/navigation';
-import { routes } from './app.routes';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import {
+  FederationManifest,
+  NativeFederationResult,
+} from '@softarc/native-federation-orchestrator';
 import { EnvironmentConfig } from '@internal/federation';
-
-export const NF_LOADER = new InjectionToken<NativeFederationResult>(
-  'nf-loader',
-);
-
-export const GET_ENV = new InjectionToken<
-  (remoteName: string) => EnvironmentConfig
->('get-env-config');
-
-const mapToRemoteEnv =
-  ({
-    manifest,
-    production,
-    apiUrl,
-    cdnUrl,
-  }: EnvironmentConfig & { manifest: Record<string, string> }) =>
-  (remoteName: string): EnvironmentConfig => ({
-    production,
-    apiUrl,
-    scope:
-      manifest[remoteName]?.replace('/remoteEntry.json', '') ?? location.origin,
-    cdnUrl,
-  });
+import { createSliceLoader, LOAD_REMOTE_SLICE } from './loader/slice-loader';
+import { ENV } from './env.config';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideShellNav } from './nav/provide-nav';
 
 export const appConfig = (
   nf: NativeFederationResult,
-  manifest: EnvironmentConfig & { manifest: Record<string, string> },
+  env: EnvironmentConfig,
+  manifest: FederationManifest,
 ): ApplicationConfig => ({
   providers: [
-    { provide: NF_LOADER, useValue: nf },
-    { provide: GET_ENV, useValue: mapToRemoteEnv(manifest) },
+    { provide: ENV, useValue: env },
+    {
+      provide: LOAD_REMOTE_SLICE,
+      useValue: createSliceLoader(nf, env, manifest),
+    },
+    provideHttpClient(withFetch()),
     provideZonelessChangeDetection(),
-    provideRouter(routes),
-    provideRouterSync(),
+    provideRouter([], withComponentInputBinding()),
+    provideShellNav(nf, manifest),
   ],
 });

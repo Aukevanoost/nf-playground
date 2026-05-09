@@ -1,3 +1,4 @@
+import { createSliceLoader } from '@internal/federation';
 import {
   initFederation,
   NativeFederationResult,
@@ -10,22 +11,23 @@ import {
 
 let showErrors = false;
 
-fetch('./env.config.json')
-  .then((resp) => resp.json())
-  .then(async (cfg) => {
-    showErrors = !cfg.production;
-    const nf: NativeFederationResult = await initFederation(cfg.manifest ?? {}, {
+Promise.all([
+  fetch('./env.config.json').then((resp) => resp.json()),
+  fetch('./federation.manifest.json').then((resp) => resp.json()),
+])
+  .then(async ([env, manifest]) => {
+    showErrors = !env.production;
+    const nf: NativeFederationResult = await initFederation(manifest, {
       ...useShimImportMap({ shimMode: true }),
       logger: consoleLogger,
       storage: globalThisStorageEntry,
       hostRemoteEntry: './remoteEntry.json',
       logLevel: 'debug',
     });
-    return import('./app/bootstrap').then((m: any) =>
-      m.bootstrap(cfg, nf.loadRemoteModule),
-    );
+    const loadRemoteSlice = createSliceLoader(nf, env, manifest);
+    const home = await import('./features/home/bootstrap');
+    await home.bootstrap(env, loadRemoteSlice);
   })
-
   .catch((err) => {
     console.error('Failed to load app!');
     if (showErrors) console.error(err);

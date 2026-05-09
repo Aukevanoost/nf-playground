@@ -5,11 +5,17 @@
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "paths": {
-      "@internal/*": [
-        "./libs/internal/src/*"
+      "@internal/navigation": [
+        "./libs/navigation/src/public-api.ts"
       ],
-      "@tractor-store/ui": [
-        "./libs/shared/ui/src/public-api.ts"
+      "@internal/federation": [
+        "./libs/federation/src/public-api.ts"
+      ],
+      "@internal/logging": [
+        "./libs/logging/src/public-api.ts"
+      ],
+      "@internal/ui": [
+        "./libs/ui/src/public-api.ts"
       ]
     },
     "strict": true,
@@ -56,6 +62,30 @@
     },
     {
       "path": "./projects/checkout/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/navigation/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/navigation/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/ui/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/federation/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/federation/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/logging/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/logging/tsconfig.spec.json"
     }
   ]
 }

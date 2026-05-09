@@ -9,9 +9,9 @@
   ],
   "include": [
     "src/**/*.ts",
-    "../../libs/shared/ui/src/public-api.ts",
-    "../../libs/internal/src/navigation/index.ts",
-    "../../libs/internal/src/federation/index.ts"
+    "../../libs/ui/src/public-api.ts",
+    "../../libs/navigation/src/public-api.ts",
+    "../../libs/federation/src/public-api.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts"

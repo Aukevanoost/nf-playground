@@ -459,6 +459,110 @@
           }
         }
       }
+    },
+    "navigation": {
+      "projectType": "library",
+      "root": "libs/navigation",
+      "sourceRoot": "libs/navigation/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/navigation/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/navigation/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/navigation/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "ui": {
+      "projectType": "library",
+      "root": "libs/ui",
+      "sourceRoot": "libs/ui/src",
+      "prefix": "ts",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/ui/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/ui/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/ui/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "federation": {
+      "projectType": "library",
+      "root": "libs/federation",
+      "sourceRoot": "libs/federation/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/federation/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/federation/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/federation/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "logging": {
+      "projectType": "library",
+      "root": "libs/logging",
+      "sourceRoot": "libs/logging/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/logging/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/logging/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/logging/tsconfig.spec.json"
+          }
+        }
+      }
     }
   },
   "schematics": {
