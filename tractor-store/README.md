@@ -57,6 +57,14 @@ Each remote (`explore`, `decide`, `checkout`) exposes its top-level component pl
 
 Each app fetches its `env.config.json` at runtime, which lists the remote manifest plus environment values (`apiUrl`, `cdnUrl`, `production`). The CI workflow rewrites these files for the deployed environment so the same build works locally and on GitHub Pages.
 
+### Documentation
+
+Architectural deep-dives live in [`docs/`](./docs/):
+
+- [Architecture](./docs/architecture.md) — host/remote decoupling, runtime discovery, and the custom-element bridge.
+- [Navigation](./docs/navigation.md) — the intent-based navigation system and why it's the load-bearing piece of the decoupling.
+- [Features](./docs/features.md) — what each team ships and how remotes compose each other's fragments.
+
 ### Limitations
 
 This implementation focuses on the micro frontends aspects. The backend is mocked, error boundaries are minimal, and bundle-size or chunking optimizations are out of scope. In a real-world project these aspects deserve more attention.
