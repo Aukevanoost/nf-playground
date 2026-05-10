@@ -1,4 +1,4 @@
-import { NavPayload } from '@internal/navigation';
+import { NavPayload } from '@internal/events';
 
 const PARAM_RE = /^:([a-zA-Z_$][\w$]*)$/;
 

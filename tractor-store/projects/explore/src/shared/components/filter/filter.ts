@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { NavLinkDirective, NavTarget } from '@internal/navigation';
+import { NavLinkDirective, NavTarget } from '@internal/events';
 
 export interface FilterItem {
   link: NavTarget;

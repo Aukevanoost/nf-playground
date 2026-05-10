@@ -3,6 +3,14 @@ import type { ListStoresResponse } from '../contracts/endpoints/store-list.contr
 import type { StoreModel } from '../contracts/models/store.model';
 import { toStoreListModel } from '../mappers/store.mapper';
 
+const NETWORK_LATENCY_MS = 150;
+
+function fakeNetwork<T>(payload: T): Promise<T> {
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(payload), NETWORK_LATENCY_MS),
+  );
+}
+
 const stores: ListStoresResponse = [
   {
     id: 'store-a',
@@ -38,7 +46,7 @@ const stores: ListStoresResponse = [
 export class StoreHttp {
   list(): ResourceRef<StoreModel[] | undefined> {
     return resource<StoreModel[], void>({
-      loader: () => Promise.resolve(toStoreListModel(stores)),
+      loader: () => fakeNetwork(toStoreListModel(stores)),
     });
   }
 }

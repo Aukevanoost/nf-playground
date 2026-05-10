@@ -5,7 +5,7 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { NavLinkDirective, NavPayload } from '@internal/navigation';
+import { NavLinkDirective, NavPayload } from '@internal/events';
 
 export type ButtonVariant = 'primary' | 'secondary';
 export type ButtonSize = 'small' | 'normal';

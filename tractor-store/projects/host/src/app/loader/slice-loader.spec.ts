@@ -1,27 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type {
-  FederationManifest,
-  NativeFederationResult,
-} from '@softarc/native-federation-orchestrator';
-import { EnvironmentConfig } from '@internal/federation';
+import { testEnv } from '../../testing/env.fixture';
+import { testManifest } from '../../testing/manifest.fixture';
+import { fakeNf } from '../../testing/native-federation.stub';
 import { createSliceLoader } from './slice-loader';
-
-const env: EnvironmentConfig = {
-  production: false,
-  apiUrl: '',
-  scope: 'http://localhost:4200',
-  cdnUrl: 'http://cdn.test',
-};
-
-const manifest: FederationManifest = {
-  '@tractor-store/explore': 'http://localhost:4201/remoteEntry.json',
-  '@tractor-store/decide': 'http://localhost:4202/remoteEntry.json',
-};
-
-const makeNf = (
-  loadRemoteModule: NativeFederationResult['loadRemoteModule'],
-): NativeFederationResult =>
-  ({ loadRemoteModule }) as unknown as NativeFederationResult;
 
 describe('createSliceLoader', () => {
   let preDefined: Set<string>;
@@ -48,7 +29,11 @@ describe('createSliceLoader', () => {
       .fn()
       .mockImplementation(async () => ({ bootstrap }));
 
-    const load = createSliceLoader(makeNf(loadRemoteModule), env, manifest);
+    const load = createSliceLoader(
+      fakeNf(loadRemoteModule),
+      testEnv,
+      testManifest,
+    );
     await load('@tractor-store/explore', 'mfe-explore');
 
     expect(loadRemoteModule).toHaveBeenCalledWith(
@@ -58,7 +43,7 @@ describe('createSliceLoader', () => {
     expect(bootstrap).toHaveBeenCalledTimes(1);
     const [bootEnv] = bootstrap.mock.calls[0];
     expect(bootEnv.scope).toBe('http://localhost:4201');
-    expect(bootEnv.cdnUrl).toBe(env.cdnUrl);
+    expect(bootEnv.cdnUrl).toBe(testEnv.cdnUrl);
   });
 
   it('does not re-bootstrap a slice already loaded by the same remote', async () => {
@@ -67,7 +52,11 @@ describe('createSliceLoader', () => {
       .fn()
       .mockImplementation(async () => ({ bootstrap }));
 
-    const load = createSliceLoader(makeNf(loadRemoteModule), env, manifest);
+    const load = createSliceLoader(
+      fakeNf(loadRemoteModule),
+      testEnv,
+      testManifest,
+    );
     await load('@tractor-store/explore', 'mfe-explore');
     await load('@tractor-store/explore', 'mfe-explore');
 
@@ -82,7 +71,11 @@ describe('createSliceLoader', () => {
       .fn()
       .mockImplementation(async () => ({ bootstrap }));
 
-    const load = createSliceLoader(makeNf(loadRemoteModule), env, manifest);
+    const load = createSliceLoader(
+      fakeNf(loadRemoteModule),
+      testEnv,
+      testManifest,
+    );
     await load('@tractor-store/explore', 'mfe-legacy');
 
     expect(loadRemoteModule).not.toHaveBeenCalled();
@@ -96,7 +89,11 @@ describe('createSliceLoader', () => {
       .mockImplementation(async () => ({ bootstrap }));
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    const load = createSliceLoader(makeNf(loadRemoteModule), env, manifest);
+    const load = createSliceLoader(
+      fakeNf(loadRemoteModule),
+      testEnv,
+      testManifest,
+    );
     await load('@tractor-store/explore', 'mfe-shared');
     await load('@tractor-store/decide', 'mfe-shared');
 
@@ -122,7 +119,11 @@ describe('createSliceLoader', () => {
           : { bootstrap: decideBootstrap },
       );
 
-    const load = createSliceLoader(makeNf(loadRemoteModule), env, manifest);
+    const load = createSliceLoader(
+      fakeNf(loadRemoteModule),
+      testEnv,
+      testManifest,
+    );
     await load('@tractor-store/explore', 'mfe-explore');
 
     expect(loadRemoteModule).toHaveBeenCalledTimes(2);
@@ -144,7 +145,11 @@ describe('createSliceLoader', () => {
       .fn()
       .mockImplementation(async () => ({ bootstrap }));
 
-    const load = createSliceLoader(makeNf(loadRemoteModule), env, manifest);
+    const load = createSliceLoader(
+      fakeNf(loadRemoteModule),
+      testEnv,
+      testManifest,
+    );
     await load('@tractor-store/explore', 'mfe-explore');
 
     expect(loadRemoteModule).toHaveBeenCalledTimes(1);

@@ -6,8 +6,8 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { param, RouteParams } from '@internal/navigation';
-import { ProductStore } from '../../core/data/store/product-store';
+import { param, RouteParams } from '@internal/events';
+import { ProductHttp } from '../../core/data/http/product-http';
 import { VariantOption } from '../../shared/components/variant-option/variant-option';
 import { ResourceService } from '../../shared/utils/resource.service';
 import { LOADER } from '../../core/remote-loader';
@@ -24,7 +24,7 @@ import { LOADER } from '../../core/remote-loader';
   },
 })
 export class ProductPage {
-  private readonly store = inject(ProductStore);
+  private readonly productHttp = inject(ProductHttp);
   private readonly image = inject(ResourceService);
   private loader = inject(LOADER);
 
@@ -40,10 +40,9 @@ export class ProductPage {
   readonly id = computed(() => param(this.routeParams(), 'id'));
   readonly sku = computed(() => param(this.routeParams(), 'sku'));
 
-  readonly product = computed(() => {
-    const id = this.id();
-    return id ? this.store.findById(id) : undefined;
-  });
+  private readonly productResource = this.productHttp.getById(this.id);
+  readonly product = this.productResource.value;
+  readonly isLoading = this.productResource.isLoading;
 
   readonly variants = computed(() => this.product()?.variants ?? []);
 

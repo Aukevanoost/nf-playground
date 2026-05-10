@@ -5,7 +5,7 @@ import {
   requireBus,
   RoutePayload,
   tryBus,
-} from '@internal/navigation';
+} from '@internal/events';
 
 const NOOP_UNSUBSCRIBE = (): void => {};
 

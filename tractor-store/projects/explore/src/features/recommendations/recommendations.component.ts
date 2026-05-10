@@ -5,7 +5,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { RecommendationStore } from '../../core/data/store/recommendation-store';
+import { RecommendationHttp } from '../../core/data/http/recommendation-http';
 import { RecommendationComponent } from '../../shared/components/recommendation/recommendation';
 
 function parseSkus(v: unknown): string[] {
@@ -27,12 +27,13 @@ function parseSkus(v: unknown): string[] {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecommendationsComponent {
-  private readonly store = inject(RecommendationStore);
+  private readonly http = inject(RecommendationHttp);
 
   readonly skus = input<string[], unknown>([], {
     alias: 'skus',
     transform: parseSkus,
   });
 
-  readonly items = computed(() => this.store.recosForSkus(this.skus()));
+  private readonly recoResource = this.http.bySeedSkus(this.skus);
+  readonly items = computed(() => this.recoResource.value() ?? []);
 }

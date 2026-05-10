@@ -460,20 +460,20 @@
         }
       }
     },
-    "navigation": {
+    "events": {
       "projectType": "library",
-      "root": "libs/navigation",
-      "sourceRoot": "libs/navigation/src",
+      "root": "libs/events",
+      "sourceRoot": "libs/events/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "libs/navigation/tsconfig.lib.prod.json"
+              "tsConfig": "libs/events/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "libs/navigation/tsconfig.lib.json"
+              "tsConfig": "libs/events/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -481,7 +481,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "libs/navigation/tsconfig.spec.json"
+            "tsConfig": "libs/events/tsconfig.spec.json"
           }
         }
       }

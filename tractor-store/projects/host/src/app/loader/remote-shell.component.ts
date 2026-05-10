@@ -12,7 +12,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Subscription } from 'rxjs';
 import { SpinnerComponent } from '@internal/ui';
-import { RouteParams, sameRouteParams } from '@internal/navigation';
+import { RouteParams, sameRouteParams } from '@internal/events';
 import { LOAD_REMOTE_SLICE } from './slice-loader';
 
 interface SliceRouteData {

@@ -6,9 +6,9 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { param, RouteParams } from '@internal/navigation';
+import { param, RouteParams } from '@internal/events';
 import type { ProductModel } from '../../core/data/contracts/models/product.model';
-import { CategoryStore } from '../../core/data/store/category-store';
+import { CategoryHttp } from '../../core/data/http/category-http';
 import { ProductTileComponent } from '../../shared/components/product-tile/product-tile';
 import {
   FilterComponent,
@@ -26,8 +26,8 @@ import { LOADER } from '../../core/remote-loader';
   host: { 'data-boundary-page': 'explore' },
 })
 export class CategoryPage {
-  private readonly categoryStore = inject(CategoryStore);
-  private loader = inject(LOADER);
+  private readonly categoryHttp = inject(CategoryHttp);
+  private readonly loader = inject(LOADER);
 
   constructor() {
     void this.loader('@tractor-store/explore', 'mfe-header');
@@ -38,32 +38,38 @@ export class CategoryPage {
 
   readonly category = computed(() => param(this.routeParams(), 'category'));
 
-  readonly activeCategory = computed(() =>
-    this.categoryStore.findByKey(this.category()),
+  private readonly categoriesResource = this.categoryHttp.list();
+  private readonly categories = computed(
+    () => this.categoriesResource.value() ?? [],
   );
 
-  readonly title = computed(() =>
-    this.activeCategory() ? this.activeCategory()!.name : 'All Machines',
+  readonly activeCategory = computed(() => {
+    const key = this.category();
+    return key ? this.categories().find((c) => c.key === key) : undefined;
+  });
+
+  readonly title = computed(
+    () => this.activeCategory()?.name ?? 'All Machines',
   );
 
   readonly products = computed<ProductModel[]>(() => {
     const cat = this.activeCategory();
-    const all = this.categoryStore.categories() ?? [];
-    const list = cat ? [...cat.products] : all.flatMap((c) => c.products);
+    const list = cat
+      ? [...cat.products]
+      : this.categories().flatMap((c) => c.products);
     return list.sort((a, b) => b.startPrice - a.startPrice);
   });
 
   readonly filters = computed<FilterItem[]>(() => {
     const current = this.category();
     const active = this.activeCategory();
-    const all = this.categoryStore.categories() ?? [];
     return [
       {
         link: { intent: 'explore.products' },
         name: 'All',
         active: !active,
       },
-      ...all.map((c) => ({
+      ...this.categories().map((c) => ({
         link: {
           intent: 'explore.products.category',
           params: { category: c.key },

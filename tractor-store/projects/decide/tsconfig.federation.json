@@ -9,7 +9,7 @@
   ],
   "include": [
     "src/**/*.ts",
-    "../../libs/navigation/src/public-api.ts",
+    "../../libs/events/src/public-api.ts",
     "../../libs/federation/src/public-api.ts"
   ],
   "exclude": [

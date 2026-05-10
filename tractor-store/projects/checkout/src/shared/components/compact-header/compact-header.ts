@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 import { ResourceService } from '../../utils/resource.service';
 
 @Component({

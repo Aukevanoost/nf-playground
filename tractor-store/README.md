@@ -1,38 +1,69 @@
-# The Tractor Store - Angular & Native Federation
+# The Tractor Store — Angular & Native Federation
 
-A micro frontends sample implementation of [The Tractor Store](https://micro-frontends.org/tractor-store/) built with Angular 21 (zoneless), [Native Federation v4][https://github.com/native-federation/angular-adapter] and Web Components. It's based on the [Blueprint](https://github.com/neuland/tractor-store-blueprint).
+A reference micro-frontend (MFE) implementation of [The Tractor Store][tractor-store],
+built with Angular 21 (zoneless), [Native Federation v4][nf-v4], and Web
+Components. It follows the [Tractor Store Blueprint][blueprint] so it can
+be compared head-to-head with implementations in other frameworks.
 
-**Live Demo:** [native-federation.github.io/angular-examples](https://native-federation.github.io/angular-examples/)
+**Live demo:** [native-federation.github.io/angular-examples](https://native-federation.github.io/angular-examples/)
 
-## About This Implementation
+[tractor-store]: https://micro-frontends.org/tractor-store/
+[nf-v4]: https://www.npmjs.com/package/@angular-architects/native-federation-v4
+[blueprint]: https://github.com/neuland/tractor-store-blueprint
 
-### Technologies
+## What this project demonstrates
 
-List of techniques used in this implementation.
+Three teams ship three Angular applications into one page, deploy them
+independently, and never import each other's code. Three ideas hold the
+boundary in place:
 
-| Aspect                     | Solution                                                |
-| -------------------------- | ------------------------------------------------------- |
-| 🛠️ Frameworks, Libraries   | [angular] (zoneless), [native-federation-v4][nf-v4]     |
-| 📝 Rendering               | CSR (Client-Side Rendering)                             |
-| 🐚 Application Shell       | Host app with route-based shell components              |
-| 🧩 Client-Side Integration | Custom Elements ([@angular/elements]) loaded as remotes |
-| 🧩 Server-Side Integration | None (static hosting)                                   |
-| 📣 Communication           | Custom Events, Shared Angular services via DI           |
-| 🗺️ Navigation              | SPA inside host, intent + URL bus across remotes        |
-| 🎨 Styling                 | Self-Contained SCSS (One bundle per remote)             |
-| 🍱 Design System           | Shared UI library (`@internal/ui`)                      |
-| 🔮 Discovery               | Runtime manifest (`env.config.json`)                    |
-| 🚚 Deployment              | Static (GitHub Pages, GitHub Actions)                   |
-| 👩‍💻 Local Development       | [angular-cli], [concurrently], [http-server]            |
+- **Custom elements as the integration surface.** Every remote registers
+  its UI as `<mfe-*>` web components. Other apps drop the tag into their
+  HTML — no Angular type, RxJS Observable, or service crosses the line.
+- **A shared event bus on `window.__NF_REGISTRY__`.** Remotes publish and
+  subscribe to small, stable events instead of calling each other
+  directly. Navigation, store selection, and cart sync all ride on this
+  bus.
+- **Intent-based navigation.** A button in *decide* that should open the
+  cart never types `'/checkout/cart'`. It emits the intent
+  `'checkout.cart'`; the host owns the URL.
+
+Each idea is documented in detail under [`docs/`](./docs/) — start there
+if you want the why and how.
+
+## Documentation
+
+| Document                                  | What's in it                                                                                                  |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [docs/README.md](./docs/README.md)         | Overview, mental model, and a "where does X live" index. **Start here.**                                      |
+| [docs/architecture.md](./docs/architecture.md) | The host/remote contract and the three decoupling mechanisms (custom elements, event bus, shared libraries).  |
+| [docs/navigation.md](./docs/navigation.md) | The intent-based navigation system — why it is the load-bearing piece of the decoupling and how it works end-to-end. |
+| [docs/features.md](./docs/features.md)     | Catalogue of what each team ships, the events they speak, and the cross-remote dependencies between them.     |
+
+## Technologies at a glance
+
+| Aspect                      | Solution                                                |
+| --------------------------- | ------------------------------------------------------- |
+| 🛠️ Frameworks, libraries    | [angular] (zoneless), [native-federation-v4][nf-v4]     |
+| 📝 Rendering                | CSR (client-side rendering)                             |
+| 🐚 Application shell        | Host app with route-based shell components              |
+| 🧩 Client-side integration  | Custom elements ([@angular/elements]) loaded as remotes |
+| 🧩 Server-side integration  | None (static hosting)                                   |
+| 📣 Communication            | Shared event bus on `window.__NF_REGISTRY__`            |
+| 🗺️ Navigation               | SPA inside host, intent + URL bus across remotes        |
+| 🎨 Styling                  | Self-contained SCSS (one bundle per remote)             |
+| 🍱 Design system            | Shared UI library (`@internal/ui`)                      |
+| 🔮 Discovery                | Runtime manifest (`federation.manifest.json`)           |
+| 🚚 Deployment               | Static (GitHub Pages, GitHub Actions)                   |
+| 👩‍💻 Local development        | [angular-cli], [concurrently], [http-server]            |
 
 [angular]: https://angular.dev/
-[nf-v4]: https://www.npmjs.com/package/@angular-architects/native-federation-v4
 [@angular/elements]: https://angular.dev/guide/elements
 [angular-cli]: https://angular.dev/tools/cli
 [concurrently]: https://github.com/open-cli-tools/concurrently
 [http-server]: https://github.com/http-party/http-server
 
-### Project Structure
+## Project structure
 
 The workspace contains four Angular applications and four libraries:
 
@@ -40,59 +71,34 @@ The workspace contains four Angular applications and four libraries:
 tractor-store/
 ├── projects/
 │   ├── host/         # Shell application — owns routing & remote loading
-│   ├── explore/      # Catalog, recommendations, store picker
+│   ├── explore/      # Catalog, recommendations, header/footer chrome
 │   ├── decide/       # Product detail page
-│   └── checkout/     # Cart, checkout, mini-cart
+│   └── checkout/     # Cart, checkout flow, mini-cart, add-to-cart
 ├── libs/
+│   ├── events/       # @internal/events     — event bus, link/route directives, intent types
 │   ├── federation/   # @internal/federation — env config & CDN helpers
-│   ├── logging/      # @internal/logging — console logger service
-│   ├── navigation/   # @internal/navigation — nav bus, link/route directives
-│   └── ui/           # @internal/ui — buttons, spinner, …
+│   ├── logging/      # @internal/logging    — console logger service
+│   └── ui/           # @internal/ui         — buttons, spinner
 └── public/cdn/       # Static fonts and images (served at :3000 in dev)
 ```
 
-Each remote (`explore`, `decide`, `checkout`) exposes its top-level component plus a handful of fragment components (e.g. `Header`, `Footer`, `MiniCart`) registered as custom elements (`mfe-<remote>`, `mfe-<remote>-<fragment>`) via `@angular/elements`. The host loads these on demand through Native Federation and renders them inside route-based shell components.
-
-### Discovery
-
-Each app fetches its `env.config.json` at runtime, which lists the remote manifest plus environment values (`apiUrl`, `cdnUrl`, `production`). The CI workflow rewrites these files for the deployed environment so the same build works locally and on GitHub Pages.
-
-### Documentation
-
-Architectural deep-dives live in [`docs/`](./docs/):
-
-- [Architecture](./docs/architecture.md) — host/remote decoupling, runtime discovery, and the custom-element bridge.
-- [Navigation](./docs/navigation.md) — the intent-based navigation system and why it's the load-bearing piece of the decoupling.
-- [Features](./docs/features.md) — what each team ships and how remotes compose each other's fragments.
-
-### Limitations
-
-This implementation focuses on the micro frontends aspects. The backend is mocked, error boundaries are minimal, and bundle-size or chunking optimizations are out of scope. In a real-world project these aspects deserve more attention.
-
-### Todos
-
-- [ ] Web performance optimizations (preload critical remotes, deeper code splitting)
-- [ ] Error boundaries / fallback UI when a remote fails to load
-- [ ] Wire a real backend instead of static fixtures
-- [ ] Show selected store on checkout page
+Each remote exposes a handful of fragments (e.g. `mfe-cart`, `mfe-header`,
+`mfe-mini-cart`) registered as custom elements via `@angular/elements`.
+The host loads these on demand through Native Federation and renders them
+inside route-based shell components.
 
 ## How to run locally
 
-Clone the repository and install dependencies (the workspace uses pnpm):
+The workspace uses pnpm. Clone, install, and start everything:
 
 ```bash
 git clone git@github.com:native-federation/angular-examples.git
 cd angular-examples/tractor-store
 pnpm install
-```
-
-Start all four apps and the static CDN concurrently:
-
-```bash
 pnpm start:all
 ```
 
-This boots:
+`start:all` boots all four apps and the static CDN concurrently:
 
 | Service         | Port |
 | --------------- | ---- |
@@ -102,7 +108,10 @@ This boots:
 | checkout        | 4203 |
 | cdn (fonts/img) | 3000 |
 
-Open http://localhost:4200 in your browser to see the integrated application. Each remote can also be opened standalone on its own port — Native Federation will load the sibling remotes it needs from the URLs declared in that remote's `public/env.config.json`.
+Open <http://localhost:4200> to see the integrated application. Each
+remote can also be opened standalone on its own port — Native Federation
+will load the sibling fragments it needs from the URLs declared in that
+remote's `public/env.config.json`.
 
 You can also serve a single app:
 
@@ -112,7 +121,8 @@ pnpm ng serve host       # or explore / decide / checkout
 
 ### Testing
 
-Unit and component tests are written with [Vitest] using `jsdom`. Run the full suite per project:
+Unit and component tests are written with [Vitest] using `jsdom`. Run the
+full suite per project:
 
 ```bash
 pnpm ng test host --watch=false
@@ -122,15 +132,32 @@ pnpm ng test host --watch=false
 
 ## Deployment
 
-The app is published to GitHub Pages by [`.github/workflows/deploy-tractor-store.yml`](../.github/workflows/deploy-tractor-store.yml) on every push to `main` that touches `tractor-store/**`. The workflow:
+The app is published to GitHub Pages by
+[`.github/workflows/deploy-tractor-store.yml`](../.github/workflows/deploy-tractor-store.yml)
+on every push to `main` that touches `tractor-store/**`. The workflow:
 
 1. Builds the four apps with the appropriate `--base-href`.
-2. Assembles a single `_site/` directory with `host` at the root and the remotes under `/explore`, `/decide`, `/checkout`.
-3. Rewrites the `env.config.json` files so each app discovers its siblings via the deployed base path.
+2. Assembles a single `_site/` directory with `host` at the root and the
+   remotes under `/explore`, `/decide`, `/checkout`.
+3. Rewrites the `env.config.json` files so each app discovers its
+   siblings via the deployed base path.
 4. Pushes the result to the `gh-pages` branch.
 
 Trigger a deploy manually from the **Actions** tab via _Run workflow_.
 
-## About The Authors
+## Scope and limitations
+
+This implementation focuses on the micro-frontend aspects. The backend is
+mocked with in-memory fixtures, error boundaries are minimal, and
+bundle-size or chunking optimisations are out of scope. In a real-world
+project these aspects deserve more attention.
+
+Open follow-ups:
+
+- [ ] Web performance optimisations (preload critical remotes, deeper code splitting).
+- [ ] Error boundaries / fallback UI when a remote fails to load.
+- [ ] Wire a real backend instead of static fixtures.
+
+## About the authors
 
 [The Native Federation team](https://native-federation.com/)

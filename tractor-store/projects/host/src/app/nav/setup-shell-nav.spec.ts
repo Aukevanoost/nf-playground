@@ -1,98 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Routes } from '@angular/router';
-import type {
-  FederationManifest,
-  NativeFederationResult,
-} from '@softarc/native-federation-orchestrator';
-import type {
-  INavRegistry,
-  NavigatePayload,
-  RoutePayload,
-} from '@internal/navigation';
-import { NavRegistry } from './nav-registry';
+import type { NativeFederationResult } from '@softarc/native-federation-orchestrator';
+import type { INavRegistry } from '@internal/events';
 import {
-  setupShellNavigation,
-  ShellRouter,
-  Subscribe,
-} from './setup-shell-nav';
-
-const exploreContribution = {
-  source: '@tractor-store/explore',
-  basePath: 'explore',
-  intents: [
-    { id: 'explore.home', path: '/', element: 'mfe-explore-home' },
-    { id: 'explore.products', path: '/products', element: 'mfe-explore-list' },
-  ],
-};
-
-const decideContribution = {
-  source: '@tractor-store/decide',
-  basePath: 'decide',
-  intents: [
-    { id: 'decide.product', path: '/product/:id', element: 'mfe-decide-product' },
-  ],
-};
-
-const manifest: FederationManifest = {
-  '@tractor-store/explore': 'http://x/remoteEntry.json',
-  '@tractor-store/decide': 'http://x/remoteEntry.json',
-};
-
-const fakeNf = (
-  byRemote: Record<string, unknown>,
-): NativeFederationResult =>
-  ({
-    loadRemoteModule: vi.fn(async (remoteName: string) => {
-      if (!(remoteName in byRemote)) throw new Error(`unknown ${remoteName}`);
-      return byRemote[remoteName];
-    }),
-  }) as unknown as NativeFederationResult;
-
-interface FakeRouter extends ShellRouter {
-  routes: Routes;
-  navigateByUrl: ReturnType<typeof vi.fn<(url: string) => Promise<boolean>>>;
-}
-
-const fakeRouter = (): FakeRouter => {
-  const router: FakeRouter = {
-    routes: [],
-    resetConfig: (r) => {
-      router.routes = r;
-    },
-    navigateByUrl: vi.fn(async () => true),
-  };
-  return router;
-};
-
-interface BusFakes {
-  emitNavigate(p: NavigatePayload): void;
-  emitRoute(p: RoutePayload): void;
-  onNavigate: Subscribe<NavigatePayload>;
-  onRoute: Subscribe<RoutePayload>;
-}
-
-const fakeBus = (): BusFakes => {
-  const navHandlers: ((p: NavigatePayload) => void)[] = [];
-  const routeHandlers: ((p: RoutePayload) => void)[] = [];
-  return {
-    emitNavigate: (p) => navHandlers.forEach((h) => h(p)),
-    emitRoute: (p) => routeHandlers.forEach((h) => h(p)),
-    onNavigate: (h) => {
-      navHandlers.push(h);
-      return () => {
-        const i = navHandlers.indexOf(h);
-        if (i >= 0) navHandlers.splice(i, 1);
-      };
-    },
-    onRoute: (h) => {
-      routeHandlers.push(h);
-      return () => {
-        const i = routeHandlers.indexOf(h);
-        if (i >= 0) routeHandlers.splice(i, 1);
-      };
-    },
-  };
-};
+  type BusFakes,
+  fakeBus,
+} from '../../testing/bus.stub';
+import {
+  decideContribution,
+  exploreContribution,
+} from '../../testing/nav-contribution.fixture';
+import {
+  fakeNf,
+  fakeNfByRemote,
+} from '../../testing/native-federation.stub';
+import { testManifest } from '../../testing/manifest.fixture';
+import {
+  type FakeRouter,
+  fakeRouter,
+} from '../../testing/router.stub';
+import { NavRegistry } from './nav-registry';
+import { setupShellNavigation } from './setup-shell-nav';
 
 describe('setupShellNavigation', () => {
   let router: FakeRouter;
@@ -112,13 +39,16 @@ describe('setupShellNavigation', () => {
   afterEach(() => vi.restoreAllMocks());
 
   it('registers every loaded contribution into the registry', async () => {
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { default: decideContribution },
     });
 
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -131,13 +61,16 @@ describe('setupShellNavigation', () => {
 
   it('does not register contributions that failed to load', async () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/decide': { navContribution: decideContribution },
       // explore is missing → loadRemoteModule throws
     });
 
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -148,12 +81,15 @@ describe('setupShellNavigation', () => {
   });
 
   it('forwards navigate-intent bus events to the registry', async () => {
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { navContribution: decideContribution },
     });
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -167,12 +103,15 @@ describe('setupShellNavigation', () => {
 
   it('logs (rather than crashing) when an emitted navigate intent is unknown', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { navContribution: decideContribution },
     });
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -188,12 +127,15 @@ describe('setupShellNavigation', () => {
   });
 
   it('forwards route bus events to router.navigateByUrl', async () => {
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { navContribution: decideContribution },
     });
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -206,12 +148,14 @@ describe('setupShellNavigation', () => {
   it('subscribes to bus events before contributions finish loading', async () => {
     let resolveLoad: (v: unknown) => void = () => {};
     const slowLoad = new Promise((r) => (resolveLoad = r));
-    const nf = {
-      loadRemoteModule: vi.fn(async () => slowLoad),
-    } as unknown as NativeFederationResult;
+    const nf: NativeFederationResult = fakeNf(
+      vi.fn(async () => slowLoad) as NativeFederationResult['loadRemoteModule'],
+    );
 
     const setup = setupShellNavigation({
-      router, registry, nf,
+      router,
+      registry,
+      nf,
       manifest: { '@tractor-store/explore': 'x' },
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
@@ -227,12 +171,15 @@ describe('setupShellNavigation', () => {
   });
 
   it('resets the router config with the remote routes plus a catch-all redirect', async () => {
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { navContribution: decideContribution },
     });
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -249,12 +196,15 @@ describe('setupShellNavigation', () => {
   });
 
   it('honours a custom fallbackRedirect', async () => {
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { navContribution: decideContribution },
     });
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,
@@ -270,13 +220,16 @@ describe('setupShellNavigation', () => {
     publishRegistry = vi.fn(async () => {
       order.push('publishRegistry');
     });
-    const nf = fakeNf({
+    const nf = fakeNfByRemote({
       '@tractor-store/explore': { navContribution: exploreContribution },
       '@tractor-store/decide': { navContribution: decideContribution },
     });
 
     await setupShellNavigation({
-      router, registry, nf, manifest,
+      router,
+      registry,
+      nf,
+      manifest: testManifest,
       onNavigate: bus.onNavigate,
       onRoute: bus.onRoute,
       publishRegistry,

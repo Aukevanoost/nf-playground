@@ -1,14 +1,48 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  CartStore,
-  CART_STORAGE_KEY,
-  CART_UPDATED_EVENT,
-} from './cart-store';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { CART_STORAGE_KEY, CartStore } from './cart-store';
+import { CART_EVENTS } from './cart-bus';
+
+type Listener = (event: { data: unknown; timestamp: number }) => void;
+
+const fakeBus = () => {
+  const listeners = new Map<string, Listener[]>();
+  return {
+    on: (type: string, cb: Listener) => {
+      const arr = listeners.get(type) ?? [];
+      arr.push(cb);
+      listeners.set(type, arr);
+      return () => {
+        const next = (listeners.get(type) ?? []).filter((h) => h !== cb);
+        listeners.set(type, next);
+      };
+    },
+    onReady: () => () => {},
+    emit: (type: string, data: unknown) => {
+      for (const cb of listeners.get(type) ?? [])
+        cb({ data, timestamp: Date.now() });
+    },
+    register: async () => {},
+    clear: () => listeners.clear(),
+  };
+};
 
 describe('CartStore', () => {
+  let original: unknown;
+  let bus: ReturnType<typeof fakeBus>;
+
   beforeEach(() => {
     window.localStorage.clear();
     TestBed.resetTestingModule();
+    original = (window as unknown as { __NF_REGISTRY__?: unknown })
+      .__NF_REGISTRY__;
+    bus = fakeBus();
+    (window as unknown as { __NF_REGISTRY__: unknown }).__NF_REGISTRY__ = bus;
+  });
+
+  afterEach(() => {
+    (window as unknown as { __NF_REGISTRY__: unknown }).__NF_REGISTRY__ =
+      original;
   });
 
   function create(): CartStore {
@@ -62,13 +96,22 @@ describe('CartStore', () => {
     expect(window.localStorage.getItem(CART_STORAGE_KEY)).toBe('');
   });
 
-  it('dispatches a same-tab update event when writing', () => {
+  it('emits an update on the NF registry when writing', () => {
     const store = create();
     const spy = vi.fn();
-    window.addEventListener(CART_UPDATED_EVENT, spy);
+    bus.on(CART_EVENTS.updated, (event) => spy(event.data));
     store.add('AU-03-RD');
-    window.removeEventListener(CART_UPDATED_EVENT, spy);
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith({
+      items: [{ sku: 'AU-03-RD', quantity: 1 }],
+    });
+  });
+
+  it('syncs from a registry update emitted by a peer MFE', () => {
+    const store = create();
+    bus.emit(CART_EVENTS.updated, {
+      items: [{ sku: 'AU-05-ZH', quantity: 3 }],
+    });
+    expect(store.lineItems()).toEqual([{ sku: 'AU-05-ZH', quantity: 3 }]);
   });
 
   it('syncs from a storage event fired by another tab', () => {

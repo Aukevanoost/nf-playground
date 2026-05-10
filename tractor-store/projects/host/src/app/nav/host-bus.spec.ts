@@ -1,45 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { emitNavigate, emitRoute } from '@internal/navigation';
+import { emitNavigate, emitRoute } from '@internal/events';
+import {
+  type FakeRegistryBus,
+  fakeRegistryBus,
+} from '../../testing/registry-bus.stub';
 import { onNavigate, onRoute, publishRegistry } from './host-bus';
-
-type Handler = (data: unknown) => void;
-
-const fakeRegistry = () => {
-  const listeners = new Map<string, Handler[]>();
-  const resources = new Map<string, unknown>();
-  const readyHandlers = new Map<string, Handler[]>();
-  return {
-    on: (type: string, cb: Handler) => {
-      const arr = listeners.get(type) ?? [];
-      arr.push(cb);
-      listeners.set(type, arr);
-      return () => {
-        const next = (listeners.get(type) ?? []).filter((h) => h !== cb);
-        listeners.set(type, next);
-      };
-    },
-    onReady: (type: string, cb: Handler) => {
-      if (resources.has(type)) {
-        cb(resources.get(type));
-      } else {
-        const arr = readyHandlers.get(type) ?? [];
-        arr.push(cb);
-        readyHandlers.set(type, arr);
-      }
-      return () => {};
-    },
-    emit: (type: string, data: unknown) => {
-      for (const cb of listeners.get(type) ?? []) {
-        cb({ data, timestamp: Date.now() });
-      }
-    },
-    register: async (type: string, resource: unknown) => {
-      resources.set(type, resource);
-      for (const cb of readyHandlers.get(type) ?? []) cb(resource);
-      readyHandlers.delete(type);
-    },
-  };
-};
 
 describe('host-bus', () => {
   let original: unknown;
@@ -48,7 +13,7 @@ describe('host-bus', () => {
     original = (window as unknown as { __NF_REGISTRY__?: unknown })
       .__NF_REGISTRY__;
     (window as unknown as { __NF_REGISTRY__: unknown }).__NF_REGISTRY__ =
-      fakeRegistry();
+      fakeRegistryBus();
   });
 
   afterEach(() => {
@@ -76,7 +41,7 @@ describe('host-bus', () => {
   it('publishRegistry resolves listeners that subscribed before publish', async () => {
     const handler = vi.fn();
     // simulate a remote listening before the host publishes
-    const bus = (window as unknown as { __NF_REGISTRY__: ReturnType<typeof fakeRegistry> })
+    const bus = (window as unknown as { __NF_REGISTRY__: FakeRegistryBus })
       .__NF_REGISTRY__;
     bus.onReady('navigation:registry', handler);
     const fake = { tag: 'registry' } as never;

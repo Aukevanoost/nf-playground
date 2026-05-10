@@ -1,8 +1,8 @@
 import { computed, Injectable, signal } from '@angular/core';
 import type { CartLineItemModel } from '../contracts/models/cart-line-item.model';
+import { emitCartUpdated, onCartUpdated } from './cart-bus';
 
 export const CART_STORAGE_KEY = 'c_cart';
-export const CART_UPDATED_EVENT = 'c_cart:updated';
 const ITEM_SEP = '|';
 const QTY_SEP = '_';
 
@@ -22,7 +22,7 @@ function parse(raw: string | null): CartLineItemModel[] {
     .filter((item) => item.sku && item.quantity > 0);
 }
 
-function serialize(items: CartLineItemModel[]): string {
+function serialize(items: readonly CartLineItemModel[]): string {
   return items
     .map((item) => `${item.sku}${QTY_SEP}${item.quantity}`)
     .join(ITEM_SEP);
@@ -43,8 +43,8 @@ export class CartStore {
   constructor() {
     if (hasWindow()) {
       window.addEventListener('storage', this.onStorage);
-      window.addEventListener(CART_UPDATED_EVENT, this.onLocalUpdate);
     }
+    onCartUpdated(({ items }) => this._lineItems.set([...items]));
   }
 
   add(sku: string): void {
@@ -69,13 +69,14 @@ export class CartStore {
 
   private persist(items: CartLineItemModel[]): void {
     this._lineItems.set(items);
-    if (!hasWindow()) return;
-    try {
-      window.localStorage.setItem(CART_STORAGE_KEY, serialize(items));
-    } catch {
-      /* storage full or unavailable – ignore */
+    if (hasWindow()) {
+      try {
+        window.localStorage.setItem(CART_STORAGE_KEY, serialize(items));
+      } catch {
+        /* storage full or unavailable – ignore */
+      }
     }
-    window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT));
+    emitCartUpdated({ items });
   }
 
   private readFromStorage(): CartLineItemModel[] {
@@ -90,10 +91,5 @@ export class CartStore {
   private readonly onStorage = (event: StorageEvent): void => {
     if (event.key !== CART_STORAGE_KEY) return;
     this._lineItems.set(parse(event.newValue));
-  };
-
-  private readonly onLocalUpdate = (): void => {
-    const next = this.readFromStorage();
-    this._lineItems.set(next);
   };
 }

@@ -5,7 +5,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 import type { ProductModel } from '../../../core/data/contracts/models/product.model';
 import { ResourceService } from '../../utils/resource.service';
 import { fmtPrice } from '../../utils/price';

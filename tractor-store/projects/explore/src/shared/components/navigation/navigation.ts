@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 
 @Component({
   selector: 'app-navigation',

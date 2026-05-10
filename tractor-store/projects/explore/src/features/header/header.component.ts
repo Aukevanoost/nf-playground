@@ -4,7 +4,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   inject,
 } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 import { NavigationComponent } from '../../shared/components/navigation/navigation';
 import { ResourceService } from '../../shared/utils/resource.service';
 import { LOADER } from '../../core/remote-loader';
@@ -20,7 +20,7 @@ import { LOADER } from '../../core/remote-loader';
 export class HeaderComponent {
   private readonly image = inject(ResourceService);
   readonly logoUrl = this.image.cdnUrl('/cdn/img/logo.svg');
-  private loader = inject(LOADER);
+  private readonly loader = inject(LOADER);
 
   constructor() {
     void this.loader('@tractor-store/checkout', 'mfe-mini-cart');

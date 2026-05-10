@@ -35,6 +35,8 @@
   <mfe-recommendations [attr.skus]="selectedSku()"></mfe-recommendations>
 </main>
 <mfe-footer></mfe-footer>
+} @else if (isLoading()) {
+<p>Loading…</p>
 } @else {
 <p>Product not found.</p>
 }

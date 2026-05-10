@@ -28,4 +28,6 @@
       <a navLink="checkout.cart" class="c_AddToCart__link">View in basket.</a>
     </div>
   </form>
+} @else if (isLoading()) {
+  <p class="c_AddToCart__loading" aria-live="polite">Loading…</p>
 }

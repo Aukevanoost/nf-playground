@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { STORE_EVENTS } from '@internal/events';
 import {
   CART_STORAGE_KEY,
   CartStore,
@@ -25,7 +26,10 @@ const fakeBus = () => {
       const arr = listeners.get(type) ?? [];
       arr.push(cb);
       listeners.set(type, arr);
-      return () => {};
+      return () => {
+        const next = (listeners.get(type) ?? []).filter((h) => h !== cb);
+        listeners.set(type, next);
+      };
     },
     onReady: () => () => {},
     emit: (type: string, data: unknown) => {
@@ -84,9 +88,7 @@ describe('CheckoutPage', () => {
     const c = fixture.componentInstance;
     c.form.patchValue({ firstname: 'Alice', lastname: 'Anderson' });
     expect(c.isReady()).toBe(false);
-    c.onStoreSelected(
-      new CustomEvent('store-selected', { detail: { id: 'berlin' } }),
-    );
+    bus.emit(STORE_EVENTS.selected, { id: 'berlin' });
     expect(c.isReady()).toBe(true);
     expect(c.storeId()).toBe('berlin');
   });
@@ -111,9 +113,7 @@ describe('CheckoutPage', () => {
     });
 
     c.form.patchValue({ firstname: 'A', lastname: 'B' });
-    c.onStoreSelected(
-      new CustomEvent('store-selected', { detail: { id: 'hamburg' } }),
-    );
+    bus.emit(STORE_EVENTS.selected, { id: 'hamburg' });
     c.onSubmit(new Event('submit'));
     expect(TestBed.inject(CartStore).lineItems()).toEqual([]);
     expect(navigated).toHaveBeenCalledWith({ id: 'checkout.thanks' });

@@ -1,4 +1,4 @@
-import type { NavTarget } from '@internal/navigation';
+import type { NavTarget } from '@internal/events';
 
 export interface TeaserDto {
   title: string;

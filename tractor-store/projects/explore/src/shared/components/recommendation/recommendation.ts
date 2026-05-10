@@ -5,7 +5,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 import type { RecommendationModel } from '../../../core/data/contracts/models/recommendation.model';
 import { ResourceService } from '../../utils/resource.service';
 

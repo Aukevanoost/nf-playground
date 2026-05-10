@@ -4,71 +4,38 @@ import {
   type ResourceRef,
   type Signal,
 } from '@angular/core';
-import type {
-  GetCategoryResponse,
-  ListCategoriesResponse,
-} from '../contracts/endpoints/category-list.contract';
+import type { GetCategoryResponse } from '../contracts/endpoints/category-list.contract';
 import type { CategoryModel } from '../contracts/models/category.model';
 import {
   toCategoryListModel,
   toCategoryModel,
 } from '../mappers/category.mapper';
+import { categoryCatalog } from './category-http.fixtures';
 
-const categories: ListCategoriesResponse = [
-  {
-    key: 'classic',
-    name: 'Classics',
-    products: [
-      { name: 'Heritage Workhorse', id: 'CL-01', image: '/cdn/img/product/[size]/CL-01-GR.webp', startPrice: 5700, link: { intent: 'decide.product', params: { id: 'CL-01' } } },
-      { name: 'Falcon Crest Farm', id: 'CL-02', image: '/cdn/img/product/[size]/CL-02-BL.webp', startPrice: 2600, link: { intent: 'decide.product', params: { id: 'CL-02' } } },
-      { name: 'Falcon Crest Work', id: 'CL-03', image: '/cdn/img/product/[size]/CL-03-GR.webp', startPrice: 2300, link: { intent: 'decide.product', params: { id: 'CL-03' } } },
-      { name: 'Broadfield Majestic', id: 'CL-04', image: '/cdn/img/product/[size]/CL-04-BL.webp', startPrice: 2200, link: { intent: 'decide.product', params: { id: 'CL-04' } } },
-      { name: 'Countryside Commander', id: 'CL-05', image: '/cdn/img/product/[size]/CL-05-PT.webp', startPrice: 2700, link: { intent: 'decide.product', params: { id: 'CL-05' } } },
-      { name: 'Danamark Steadfast', id: 'CL-06', image: '/cdn/img/product/[size]/CL-06-MT.webp', startPrice: 2800, link: { intent: 'decide.product', params: { id: 'CL-06' } } },
-      { name: 'Greenland Rover', id: 'CL-07', image: '/cdn/img/product/[size]/CL-07-GR.webp', startPrice: 2900, link: { intent: 'decide.product', params: { id: 'CL-07' } } },
-      { name: 'Holland Hamster', id: 'CL-08', image: '/cdn/img/product/[size]/CL-08-GR.webp', startPrice: 7750, link: { intent: 'decide.product', params: { id: 'CL-08' } } },
-      { name: 'TerraFirma Veneto', id: 'CL-09', image: '/cdn/img/product/[size]/CL-09-BL.webp', startPrice: 2950, link: { intent: 'decide.product', params: { id: 'CL-09' } } },
-      { name: 'Global Gallant', id: 'CL-10', image: '/cdn/img/product/[size]/CL-10-SD.webp', startPrice: 2600, link: { intent: 'decide.product', params: { id: 'CL-10' } } },
-      { name: 'Scandinavia Sower', id: 'CL-11', image: '/cdn/img/product/[size]/CL-11-SK.webp', startPrice: 3100, link: { intent: 'decide.product', params: { id: 'CL-11' } } },
-      { name: 'Celerity Cruiser', id: 'CL-12', image: '/cdn/img/product/[size]/CL-12-BL.webp', startPrice: 3200, link: { intent: 'decide.product', params: { id: 'CL-12' } } },
-      { name: 'Rapid Racer', id: 'CL-13', image: '/cdn/img/product/[size]/CL-13-BL.webp', startPrice: 7500, link: { intent: 'decide.product', params: { id: 'CL-13' } } },
-      { name: 'Caribbean Cruiser', id: 'CL-14', image: '/cdn/img/product/[size]/CL-14-GR.webp', startPrice: 2300, link: { intent: 'decide.product', params: { id: 'CL-14' } } },
-      { name: 'Fieldmaster Classic', id: 'CL-15', image: '/cdn/img/product/[size]/CL-15-PI.webp', startPrice: 6200, link: { intent: 'decide.product', params: { id: 'CL-15' } } },
-    ],
-  },
-  {
-    key: 'autonomous',
-    name: 'Autonomous',
-    products: [
-      { name: 'TerraFirma AutoCultivator T-300', id: 'AU-01', image: '/cdn/img/product/[size]/AU-01-SI.webp', startPrice: 1000, link: { intent: 'decide.product', params: { id: 'AU-01' } } },
-      { name: 'SmartFarm Titan', id: 'AU-02', image: '/cdn/img/product/[size]/AU-02-OG.webp', startPrice: 4000, link: { intent: 'decide.product', params: { id: 'AU-02' } } },
-      { name: 'FutureHarvest Navigator', id: 'AU-03', image: '/cdn/img/product/[size]/AU-03-TQ.webp', startPrice: 1600, link: { intent: 'decide.product', params: { id: 'AU-03' } } },
-      { name: 'Sapphire Sunworker 460R', id: 'AU-04', image: '/cdn/img/product/[size]/AU-04-RD.webp', startPrice: 8500, link: { intent: 'decide.product', params: { id: 'AU-04' } } },
-      { name: 'EcoGrow Crop Commander', id: 'AU-05', image: '/cdn/img/product/[size]/AU-05-ZH.webp', startPrice: 3400, link: { intent: 'decide.product', params: { id: 'AU-05' } } },
-      { name: 'FarmFleet Sovereign', id: 'AU-06', image: '/cdn/img/product/[size]/AU-06-CZ.webp', startPrice: 2100, link: { intent: 'decide.product', params: { id: 'AU-06' } } },
-      { name: 'Verde Voyager', id: 'AU-07', image: '/cdn/img/product/[size]/AU-07-MT.webp', startPrice: 4000, link: { intent: 'decide.product', params: { id: 'AU-07' } } },
-      { name: 'Field Pioneer', id: 'AU-08', image: '/cdn/img/product/[size]/AU-08-WH.webp', startPrice: 4500, link: { intent: 'decide.product', params: { id: 'AU-08' } } },
-    ],
-  },
-];
+const NETWORK_LATENCY_MS = 150;
+
+function fakeNetwork<T>(payload: T): Promise<T> {
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(payload), NETWORK_LATENCY_MS),
+  );
+}
 
 @Injectable({ providedIn: 'root' })
 export class CategoryHttp {
   list(): ResourceRef<CategoryModel[] | undefined> {
     return resource<CategoryModel[], void>({
-      loader: () => Promise.resolve(toCategoryListModel(categories)),
+      loader: () => fakeNetwork(toCategoryListModel(categoryCatalog)),
     });
   }
 
   byKey(
-    key: Signal<string | undefined>,
+    key: Signal<string | undefined | null>,
   ): ResourceRef<CategoryModel | undefined> {
     return resource<CategoryModel | undefined, string | undefined>({
-      params: () => key(),
+      params: () => key() ?? undefined,
       loader: ({ params }) => {
-        if (!params) return Promise.resolve(undefined);
-        const match = categories.find((c) => c.key === params);
-        return Promise.resolve(
+        const match = categoryCatalog.find((c) => c.key === params);
+        return fakeNetwork(
           match ? toCategoryModel(match as GetCategoryResponse) : undefined,
         );
       },

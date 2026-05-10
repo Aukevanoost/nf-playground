@@ -6,7 +6,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 import { ButtonComponent } from '@internal/ui';
 import { CartStore } from '../../../core/data/store/cart-store';
 import { ResourceService } from '../../utils/resource.service';

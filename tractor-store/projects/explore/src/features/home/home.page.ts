@@ -5,8 +5,8 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
-import { TeaserStore } from '../../core/data/store/teaser-store';
+import { NavLinkDirective } from '@internal/events';
+import { TeaserHttp } from '../../core/data/http/teaser-http';
 import { ResourceService } from '../../shared/utils/resource.service';
 import { LOADER } from '../../core/remote-loader';
 
@@ -20,9 +20,9 @@ import { LOADER } from '../../core/remote-loader';
   host: { 'data-boundary-page': 'explore' },
 })
 export class HomePage {
-  private readonly teaserStore = inject(TeaserStore);
+  private readonly teaserHttp = inject(TeaserHttp);
   private readonly image = inject(ResourceService);
-  private loader = inject(LOADER);
+  private readonly loader = inject(LOADER);
 
   constructor() {
     void this.loader('@tractor-store/explore', 'mfe-header');
@@ -30,8 +30,10 @@ export class HomePage {
     void this.loader('@tractor-store/explore', 'mfe-recommendations');
   }
 
+  private readonly teaserResource = this.teaserHttp.list();
+
   readonly teasers = computed(() =>
-    (this.teaserStore.teasers() ?? []).map((t) => ({
+    (this.teaserResource.value() ?? []).map((t) => ({
       ...t,
       src: this.image.imgSrc(t.image, 500),
       srcset: this.image.imgSrcset(t.image, [500, 1000]),

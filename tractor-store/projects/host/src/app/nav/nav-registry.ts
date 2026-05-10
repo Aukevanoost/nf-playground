@@ -4,7 +4,7 @@ import {
   NavContribution,
   NavNavigator,
   NavPayload,
-} from '@internal/navigation';
+} from '@internal/events';
 import { joinPath, resolveTemplate, splitIntentParams } from './path-template';
 
 type ResolvedIntent = {

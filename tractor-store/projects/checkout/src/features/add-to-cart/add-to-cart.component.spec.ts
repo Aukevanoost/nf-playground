@@ -1,10 +1,10 @@
-import { ComponentRef, signal } from '@angular/core';
+import { ComponentRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import type { VariantModel } from '../../core/data/contracts/models/variant.model';
 import { VariantHttp } from '../../core/data/http/variant-http';
 import { CartStore } from '../../core/data/store/cart-store';
+import { fakeVariantHttp } from '../../testing/variant-http.stub';
 import { AddToCartComponent } from './add-to-cart.component';
 
 type Listener = (data: unknown) => void;
@@ -28,33 +28,6 @@ const fakeBus = () => {
   };
 };
 
-const variantFixture: VariantModel[] = [
-  {
-    id: 'AU-03',
-    sku: 'AU-03-RD',
-    name: 'FutureHarvest Navigator Scarlet Dynamo',
-    image: '/cdn/img/product/[size]/AU-03-RD.webp',
-    price: 1900,
-    inventory: 8,
-  },
-  {
-    id: 'CL-04',
-    sku: 'CL-04-TQ',
-    name: 'Broadfield Majestic Aqua Green',
-    image: '/cdn/img/product/[size]/CL-04-TQ.webp',
-    price: 2200,
-    inventory: 0,
-  },
-];
-
-function fakeVariantHttp() {
-  return {
-    list() {
-      return { value: signal(variantFixture) };
-    },
-  };
-}
-
 describe('AddToCartComponent', () => {
   let original: unknown;
 
@@ -77,7 +50,7 @@ describe('AddToCartComponent', () => {
       imports: [AddToCartComponent],
       providers: [
         provideRouter([]),
-        { provide: VariantHttp, useFactory: fakeVariantHttp },
+        { provide: VariantHttp, useFactory: () => fakeVariantHttp() },
       ],
     }).compileComponents();
     const fixture = TestBed.createComponent(AddToCartComponent);

@@ -6,10 +6,10 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { NavLinkDirective } from '@internal/navigation';
+import { NavLinkDirective } from '@internal/events';
 import { ButtonComponent } from '@internal/ui';
+import { VariantHttp } from '../../core/data/http/variant-http';
 import { CartStore } from '../../core/data/store/cart-store';
-import { VariantStore } from '../../core/data/store/variant-store';
 
 @Component({
   selector: 'app-add-to-cart',
@@ -21,11 +21,13 @@ import { VariantStore } from '../../core/data/store/variant-store';
 })
 export class AddToCartComponent {
   private readonly cart = inject(CartStore);
-  private readonly variants = inject(VariantStore);
+  private readonly variantHttp = inject(VariantHttp);
 
   readonly sku = input.required<string>();
 
-  readonly variant = computed(() => this.variants.findBySku(this.sku()));
+  private readonly variantResource = this.variantHttp.getBySku(this.sku);
+  readonly variant = this.variantResource.value;
+  readonly isLoading = this.variantResource.isLoading;
   readonly outOfStock = computed(() => (this.variant()?.inventory ?? 0) === 0);
   readonly confirmed = signal(false);
 

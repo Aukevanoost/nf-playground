@@ -5,7 +5,7 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { StoreStore } from '../../core/data/store/store-store';
+import { StoreHttp } from '../../core/data/http/store-http';
 import { StoreTileComponent } from '../../shared/components/store-tile/store-tile';
 import { LOADER } from '../../core/remote-loader';
 
@@ -19,9 +19,10 @@ import { LOADER } from '../../core/remote-loader';
   host: { 'data-boundary-page': 'explore' },
 })
 export class StoresPage {
-  private readonly storeStore = inject(StoreStore);
-  readonly stores = computed(() => this.storeStore.stores() ?? []);
-  private loader = inject(LOADER);
+  private readonly storeHttp = inject(StoreHttp);
+  private readonly storesResource = this.storeHttp.list();
+  readonly stores = computed(() => this.storesResource.value() ?? []);
+  private readonly loader = inject(LOADER);
 
   constructor() {
     void this.loader('@tractor-store/explore', 'mfe-header');

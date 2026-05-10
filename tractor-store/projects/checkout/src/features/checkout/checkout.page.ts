@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
+  DestroyRef,
   inject,
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { emitNavigate } from '@internal/navigation';
+import { emitNavigate, onStoreSelected } from '@internal/events';
 import { ButtonComponent } from '@internal/ui';
 import { CartStore } from '../../core/data/store/cart-store';
 import { CompactHeaderComponent } from '../../shared/components/compact-header/compact-header';
@@ -29,6 +30,9 @@ export class CheckoutPage {
   constructor() {
     void this.loader('@tractor-store/explore', 'mfe-store-picker');
     void this.loader('@tractor-store/explore', 'mfe-footer');
+
+    const off = onStoreSelected(({ id }) => this.applyStoreId(id));
+    inject(DestroyRef).onDestroy(off);
   }
 
   readonly storeId = signal<string>('');
@@ -38,13 +42,6 @@ export class CheckoutPage {
     lastname: ['', Validators.required],
     storeId: [{ value: '', disabled: false }, Validators.required],
   });
-
-  onStoreSelected(event: Event): void {
-    const ce = event as CustomEvent<{ id: string }>;
-    const id = ce.detail?.id ?? '';
-    this.storeId.set(id);
-    this.form.controls.storeId.setValue(id);
-  }
 
   isReady(): boolean {
     const { firstname, lastname, storeId } = this.form.getRawValue();
@@ -56,5 +53,10 @@ export class CheckoutPage {
     if (!this.isReady()) return;
     this.cart.clear();
     emitNavigate({ id: 'checkout.thanks' });
+  }
+
+  private applyStoreId(id: string): void {
+    this.storeId.set(id);
+    this.form.controls.storeId.setValue(id);
   }
 }

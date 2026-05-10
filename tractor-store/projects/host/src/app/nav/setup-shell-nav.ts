@@ -7,7 +7,7 @@ import {
   INavRegistry,
   NavigatePayload,
   RoutePayload,
-} from '@internal/navigation';
+} from '@internal/events';
 import { loadContributions } from './load-contributions';
 import { buildRemoteRoutes } from './remote-routes';
 

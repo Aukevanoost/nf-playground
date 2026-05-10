@@ -1,11 +1,11 @@
-import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { CART_STORAGE_KEY } from '../../core/data/store/cart-store';
-import type { VariantModel } from '../../core/data/contracts/models/variant.model';
 import { VariantHttp } from '../../core/data/http/variant-http';
-import { ENV } from '../../env.config';
 import { LOADER } from '../../core/remote-loader';
+import { ENV } from '../../env.config';
+import { fakeVariantHttp } from '../../testing/variant-http.stub';
 import { CartPage } from './cart.page';
 
 const envFixture = {
@@ -15,23 +15,16 @@ const envFixture = {
   cdnUrl: '',
 };
 
-const variantFixture: VariantModel[] = [
-  {
-    id: 'AU-03',
-    sku: 'AU-03-RD',
-    name: 'FutureHarvest Navigator Scarlet Dynamo',
-    image: '/cdn/img/product/[size]/AU-03-RD.webp',
-    price: 1900,
-    inventory: 8,
-  },
-];
-
-function fakeVariantHttp() {
-  return {
-    list() {
-      return { value: signal(variantFixture) };
-    },
-  };
+function configure() {
+  return TestBed.configureTestingModule({
+    imports: [CartPage],
+    providers: [
+      provideRouter([]),
+      { provide: VariantHttp, useFactory: () => fakeVariantHttp() },
+      { provide: LOADER, useValue: () => Promise.resolve() },
+      { provide: ENV, useValue: envFixture },
+    ],
+  }).compileComponents();
 }
 
 describe('CartPage', () => {
@@ -40,16 +33,8 @@ describe('CartPage', () => {
     TestBed.resetTestingModule();
   });
 
-  it('creates with an empty cart', async () => {
-    await TestBed.configureTestingModule({
-      imports: [CartPage],
-      providers: [
-        provideRouter([]),
-        { provide: VariantHttp, useFactory: fakeVariantHttp },
-        { provide: LOADER, useValue: () => Promise.resolve() },
-        { provide: ENV, useValue: envFixture },
-      ],
-    }).compileComponents();
+  it('creates with an empty cart and triggers no variant fetch', async () => {
+    await configure();
     const fixture = TestBed.createComponent(CartPage);
     fixture.detectChanges();
     expect(fixture.componentInstance).toBeTruthy();
@@ -59,15 +44,7 @@ describe('CartPage', () => {
 
   it('derives line items from the cart store', async () => {
     window.localStorage.setItem(CART_STORAGE_KEY, 'AU-03-RD_2');
-    await TestBed.configureTestingModule({
-      imports: [CartPage],
-      providers: [
-        provideRouter([]),
-        { provide: VariantHttp, useFactory: fakeVariantHttp },
-        { provide: LOADER, useValue: () => Promise.resolve() },
-        { provide: ENV, useValue: envFixture },
-      ],
-    }).compileComponents();
+    await configure();
     const fixture = TestBed.createComponent(CartPage);
     fixture.detectChanges();
     const items = fixture.componentInstance.lineItems();

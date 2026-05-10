@@ -2,7 +2,7 @@ import {
   FederationManifest,
   NativeFederationResult,
 } from '@softarc/native-federation-orchestrator';
-import { NavContribution } from '@internal/navigation';
+import { NavContribution } from '@internal/events';
 
 export const NAV_CONTRIBUTION_MODULE = 'nav-contribution';
 

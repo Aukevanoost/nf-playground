@@ -8,7 +8,7 @@
   "include": [
     "src/**/*.ts",
     "../../libs/federation/src/public-api.ts",
-    "../../libs/navigation/src/public-api.ts",
+    "../../libs/events/src/public-api.ts",
     "../../libs/ui/src/public-api.ts"
   ],
   "exclude": [

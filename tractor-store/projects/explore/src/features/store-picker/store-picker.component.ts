@@ -7,10 +7,16 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { emitStoreSelected } from '@internal/events';
 import { ButtonComponent } from '@internal/ui';
 import type { StoreModel } from '../../core/data/contracts/models/store.model';
-import { StoreStore } from '../../core/data/store/store-store';
+import { StoreHttp } from '../../core/data/http/store-http';
 import { ResourceService } from '../../shared/utils/resource.service';
+
+interface StoreView extends StoreModel {
+  src: string;
+  srcset: string;
+}
 
 @Component({
   selector: 'app-store-picker',
@@ -20,20 +26,24 @@ import { ResourceService } from '../../shared/utils/resource.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StorePickerComponent {
-  private readonly storeStore = inject(StoreStore);
+  private readonly storeHttp = inject(StoreHttp);
   private readonly image = inject(ResourceService);
-  private readonly hostRef = inject(ElementRef<HTMLElement>);
 
-  readonly stores = computed(() => this.storeStore.stores() ?? []);
   readonly selected = signal<StoreModel | null>(null);
+
+  private readonly storesResource = this.storeHttp.list();
+
+  readonly stores = computed<StoreView[]>(() =>
+    (this.storesResource.value() ?? []).map((s) => this.toView(s)),
+  );
+
+  readonly selectedView = computed<StoreView | null>(() => {
+    const s = this.selected();
+    return s ? this.toView(s) : null;
+  });
 
   readonly dialogRef =
     viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
-
-  readonly imageMeta = (image: string) => ({
-    src: this.image.imgSrc(image, 200),
-    srcset: this.image.imgSrcset(image, [200, 400]),
-  });
 
   open(): void {
     const el = this.dialogRef().nativeElement;
@@ -46,12 +56,14 @@ export class StorePickerComponent {
     this.selected.set(store);
     const el = this.dialogRef().nativeElement;
     if (typeof el.close === 'function') el.close();
-    this.hostRef.nativeElement.dispatchEvent(
-      new CustomEvent('store-selected', {
-        detail: { id: store.id },
-        bubbles: true,
-        composed: true,
-      }),
-    );
+    emitStoreSelected({ id: store.id });
+  }
+
+  private toView(store: StoreModel): StoreView {
+    return {
+      ...store,
+      src: this.image.imgSrc(store.image, 200),
+      srcset: this.image.imgSrcset(store.image, [200, 400]),
+    };
   }
 }
