@@ -1,0 +1,109 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "paths": {
+      "@ng-internal/event-bus": [
+        "./libs/event-bus/src/public-api.ts"
+      ],
+      "@ng-internal/federation": [
+        "./libs/federation/src/public-api.ts"
+      ],
+      "@ng-internal/logging": [
+        "./libs/logging/src/public-api.ts"
+      ],
+      "@ng-internal/navigation": [
+        "./libs/navigation/src/public-api.ts"
+      ],
+      "@ng-internal/ui": [
+        "./libs/ui/src/public-api.ts"
+      ],
+      "@ng-internal/url": [
+        "./libs/url/src/public-api.ts"
+      ]
+    },
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "references": [
+    {
+      "path": "./projects/host/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/host/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/explore/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/explore/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/decide/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/decide/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/checkout/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/checkout/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/event-bus/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/event-bus/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/navigation/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/navigation/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/url/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/url/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/ui/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/federation/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/federation/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/logging/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/logging/tsconfig.spec.json"
+    }
+  ]
+}

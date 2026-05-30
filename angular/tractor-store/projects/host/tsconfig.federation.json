@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/app",
+    "types": []
+  },
+  "files": [],
+  "include": [
+    "src/**/*.ts",
+    "../../libs/federation/src/public-api.ts",
+    "../../libs/event-bus/src/public-api.ts",
+    "../../libs/navigation/src/public-api.ts",
+    "../../libs/url/src/public-api.ts",
+    "../../libs/ui/src/public-api.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts"
+  ]
+}

@@ -1,0 +1,7 @@
+// Universal reset + design tokens (--outer-space, font, body resets) are
+// served from the CDN: see projects/host/src/index.html for the <link> tag
+// to http://localhost:3000/cdn/css/global.css. The Raleway WOFF2 itself is
+// still registered at runtime via FontFace in projects/host/src/app/bootstrap.ts
+// because the URL depends on env.cdnUrl.
+//
+// Add host-specific styles (shell chrome, layout) below if needed.

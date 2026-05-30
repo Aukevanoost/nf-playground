@@ -1,0 +1,74 @@
+import { useEffect, useState } from 'react';
+import { Button } from '@react-internal/ui';
+import { useCart } from '../../cart/use-cart';
+import { useScopedStyles } from '@react-internal/mfe-runtime';
+import { miniCartStyles } from './mini-cart-styles';
+
+export function MiniCart() {
+  // Inside the shadow root: adopt as a constructable stylesheet. CDN reset
+  // and font cascade in via inheritable rules (font-family) and CSS vars
+  // (--outer-space), so no need for ensureGlobalContract here.
+  useScopedStyles('checkout-mini-cart', miniCartStyles);
+
+  const { totalQuantity } = useCart();
+  const [highlight, setHighlight] = useState(false);
+  const [prev, setPrev] = useState(totalQuantity);
+
+  // "Storing information from previous renders" pattern — React docs.
+  // We compare to the previous render's value during render, kick off the
+  // highlight, and only the timer reset uses an effect.
+  if (totalQuantity !== prev) {
+    setPrev(totalQuantity);
+    if (totalQuantity > prev) setHighlight(true);
+  }
+
+  useEffect(() => {
+    if (!highlight) return;
+    const t = setTimeout(() => setHighlight(false), 600);
+    return () => clearTimeout(t);
+  }, [highlight]);
+
+  return (
+    <div
+      className={highlight ? 'c_MiniCart c_MiniCart--highlight' : 'c_MiniCart'}
+      data-boundary="checkout"
+    >
+      <Button
+        variant="secondary"
+        rounded
+        navigateTo="checkout.cart"
+        extraClass="c_MiniCart__button"
+        title="View Cart"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="33"
+          height="33"
+          viewBox="0 0 33 33"
+          fill="none"
+          aria-hidden="true"
+        >
+          <g clipPath="url(#mc-a)">
+            <path
+              fill="#000"
+              d="M2.75 27.5c0 1.5125 1.2375 2.75 2.75 2.75h22c1.5125 0 2.75-1.2375 2.75-2.75V9.625h-6.3188c-.649-3.5145-3.7311-6.1875-7.4312-6.1875-3.7001 0-6.78219 2.673-7.43119 6.1875H2.75V27.5ZM16.5 4.8125c2.9391 0 5.4003 2.06113 6.028 4.8125H10.472c.6277-2.75137 3.0889-4.8125 6.028-4.8125ZM8.9375 11v4.125h1.375V11h12.375v4.125h1.375V11h4.8125v16.5c0 .7583-.6167 1.375-1.375 1.375h-22c-.75831 0-1.375-.6167-1.375-1.375V11h4.8125Z"
+            />
+          </g>
+          <defs>
+            <clipPath id="mc-a">
+              <path fill="#fff" d="M0 0h33v33H0z" />
+            </clipPath>
+          </defs>
+        </svg>
+        {totalQuantity > 0 ? (
+          <div
+            className="c_MiniCart__quantity"
+            aria-label={`${totalQuantity} item${totalQuantity === 1 ? '' : 's'} in cart`}
+          >
+            {totalQuantity}
+          </div>
+        ) : null}
+      </Button>
+    </div>
+  );
+}

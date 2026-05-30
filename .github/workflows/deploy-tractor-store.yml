@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'tractor-store/**'
-      - '.github/workflows/deploy-tractor-store.yml'
+      - "angular/tractor-store/**"
+      - ".github/workflows/deploy-tractor-store.yml"
   workflow_dispatch:
 
 concurrency:
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  BASE_PATH: /angular-examples
+  BASE_PATH: /playground
 
 jobs:
   build-and-deploy:
@@ -22,19 +22,19 @@ jobs:
       contents: write
     defaults:
       run:
-        working-directory: tractor-store
+        working-directory: angular/tractor-store
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
-          cache-dependency-path: tractor-store/pnpm-lock.yaml
+          cache-dependency-path: angular/tractor-store/pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
@@ -101,7 +101,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: tractor-store/_site
+          publish_dir: angular/tractor-store/_site
           publish_branch: gh-pages
           force_orphan: true
-          commit_message: 'deploy tractor-store: ${{ github.sha }}'
+          commit_message: "deploy tractor-store: ${{ github.sha }}"
