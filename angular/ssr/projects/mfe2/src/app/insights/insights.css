@@ -1,0 +1,83 @@
+:host {
+  display: block;
+}
+
+.insights {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.insights__header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.insights__source {
+  margin: 0.25rem 0 1.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.insights__source code {
+  background: #f1f5f9;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+}
+
+.insights__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+}
+
+.insights__stat {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.insights__stat dt {
+  color: #64748b;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.insights__stat dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.insights__progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #475569;
+  margin-bottom: 0.4rem;
+}
+
+.insights__bar {
+  height: 0.75rem;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.insights__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c3aed, #ec4899);
+  transition: width 0.3s ease;
+}
+
+.insights__empty,
+.insights__loading {
+  color: #94a3b8;
+  padding: 1rem;
+  border: 1px dashed #e2e8f0;
+  border-radius: 0.5rem;
+  text-align: center;
+}

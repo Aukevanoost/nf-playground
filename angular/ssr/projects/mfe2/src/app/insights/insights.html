@@ -1,0 +1,48 @@
+<section class="insights">
+  <header class="insights__header">
+    <h1>Insights</h1>
+    <p class="insights__source">
+      Read-only view of the todos persisted by <code>mfe1</code> in localStorage.
+    </p>
+  </header>
+
+  @if (loaded()) {
+    @if (total() > 0) {
+      <dl class="insights__stats">
+        <div class="insights__stat">
+          <dt>Total</dt>
+          <dd>{{ total() }}</dd>
+        </div>
+        <div class="insights__stat">
+          <dt>Active</dt>
+          <dd>{{ active() }}</dd>
+        </div>
+        <div class="insights__stat">
+          <dt>Completed</dt>
+          <dd>{{ completed() }}</dd>
+        </div>
+      </dl>
+
+      <div class="insights__progress">
+        <div class="insights__progress-label">
+          <span>Completion</span>
+          <span>{{ completionRate() }}%</span>
+        </div>
+        <div
+          class="insights__bar"
+          role="progressbar"
+          aria-label="Completion rate"
+          [attr.aria-valuenow]="completionRate()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="insights__bar-fill" [style.width.%]="completionRate()"></div>
+        </div>
+      </div>
+    } @else {
+      <p class="insights__empty">No todos yet — add some in the Todos section first.</p>
+    }
+  } @else {
+    <p class="insights__loading" aria-live="polite">Loading insights…</p>
+  }
+</section>

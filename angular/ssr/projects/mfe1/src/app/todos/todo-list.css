@@ -1,0 +1,137 @@
+:host {
+  display: block;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.todos {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.todos__header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.todos__summary {
+  margin: 0.25rem 0 1.25rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.todos__add {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.todos__add input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.todos__add button,
+.todos__clear {
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: #6d28d9;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.todos__add button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.todos__filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.todos__filter {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.todos__filter.is-active {
+  background: #ede9fe;
+  color: #6d28d9;
+  border-color: #c4b5fd;
+  font-weight: 600;
+}
+
+.todos__list {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.todos__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+}
+
+.todos__item.is-completed .todos__title {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.todos__title {
+  flex: 1;
+  color: #1e293b;
+  text-decoration: none;
+}
+
+.todos__title:hover {
+  text-decoration: underline;
+}
+
+.todos__delete {
+  border: 0;
+  background: transparent;
+  color: #ef4444;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.todos__empty {
+  padding: 1rem;
+  text-align: center;
+  color: #94a3b8;
+  border: 1px dashed #e2e8f0;
+  border-radius: 0.5rem;
+}
+
+.todos__clear {
+  background: #f1f5f9;
+  color: #475569;
+}

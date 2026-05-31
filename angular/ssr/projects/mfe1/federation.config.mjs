@@ -7,11 +7,29 @@ export default withNativeFederation({
 
 
   exposes: {
-    './Component': './projects/mfe1/src/app/app.ts',
+    // The host mounts these under its own `/todos` route shape via
+    // `loadComponent` (see projects/host/src/app/app.routes.ts). mfe1 owns the
+    // components; the host owns the route paths so SSR deep-links land in the
+    // route manifest. See the README, "Federated routes under SSR".
+    './List': './projects/mfe1/src/app/todos/todo-list.ts',
+    './Detail': './projects/mfe1/src/app/todos/todo-detail.ts',
   },
 
   shared: {
-    ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+    ...shareAll(
+      { singleton: true, strictVersion: true, requiredVersion: 'auto', build: 'package' },
+      {
+        overrides: {
+          '@angular/core': {
+            singleton: true,
+            strictVersion: true,
+            requiredVersion: 'auto',
+            build: 'package',
+            includeSecondaries: { keepAll: true },
+          },
+        },
+      },
+    ),
   },
 
   skip: [

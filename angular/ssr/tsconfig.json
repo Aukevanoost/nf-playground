@@ -40,6 +40,12 @@
     },
     {
       "path": "./projects/mfe1/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/mfe2/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/mfe2/tsconfig.spec.json"
     }
   ]
 }

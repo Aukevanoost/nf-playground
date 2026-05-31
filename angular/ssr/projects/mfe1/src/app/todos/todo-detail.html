@@ -1,0 +1,29 @@
+<section class="detail">
+  <a class="detail__back" routerLink="..">← Back to list</a>
+
+  @if (todo(); as todo) {
+    <h1 class="detail__heading">Edit todo</h1>
+
+    <form class="detail__form" [formGroup]="form" (ngSubmit)="save()">
+      <label class="detail__label" for="todo-title">Title</label>
+      <input id="todo-title" type="text" formControlName="title" autocomplete="off" />
+
+      <div class="detail__row">
+        <label class="detail__check">
+          <input type="checkbox" [checked]="todo.completed" (change)="toggle()" />
+          Completed
+        </label>
+        <span class="detail__status" [class.is-done]="todo.completed">
+          {{ todo.completed ? 'Done' : 'Active' }}
+        </span>
+      </div>
+
+      <div class="detail__actions">
+        <button type="submit" class="detail__save" [disabled]="form.invalid">Save</button>
+        <button type="button" class="detail__delete" (click)="remove()">Delete</button>
+      </div>
+    </form>
+  } @else {
+    <p class="detail__missing">No todo found with id “{{ id() }}”.</p>
+  }
+</section>

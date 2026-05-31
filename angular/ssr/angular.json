@@ -59,7 +59,7 @@
 						"server": "projects/host/src/main.server.ts",
 						"outputMode": "server",
 						"security": {
-							"allowedHosts": []
+							"allowedHosts": ["localhost"]
 						},
 						"ssr": {
 							"entry": "projects/host/src/server.ts"
@@ -134,7 +134,7 @@
 						"server": "projects/example/src/main.server.ts",
 						"outputMode": "server",
 						"security": {
-							"allowedHosts": []
+							"allowedHosts": ["localhost"]
 						},
 						"ssr": {
 							"entry": "projects/example/src/server.ts"
@@ -234,7 +234,7 @@
 						"server": "projects/mfe1/src/main.server.ts",
 						"outputMode": "server",
 						"security": {
-							"allowedHosts": []
+							"allowedHosts": ["localhost"]
 						},
 						"ssr": {
 							"entry": "projects/mfe1/src/server.ts"
@@ -281,6 +281,110 @@
 					"defaultConfiguration": "development",
 					"options": {
 						"port": 4201
+					}
+				}
+			}
+		},
+		"mfe2": {
+			"projectType": "application",
+			"schematics": {},
+			"root": "projects/mfe2",
+			"sourceRoot": "projects/mfe2/src",
+			"prefix": "app",
+			"architect": {
+				"build": {
+					"builder": "@angular-architects/native-federation-v4:build",
+					"options": {
+						"ssr": true
+					},
+					"configurations": {
+						"production": {
+							"target": "mfe2:esbuild:production"
+						},
+						"development": {
+							"target": "mfe2:esbuild:development",
+							"dev": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve": {
+					"builder": "@angular-architects/native-federation-v4:build",
+					"options": {
+						"target": "mfe2:serve-original:development",
+						"rebuildDelay": 500,
+						"dev": true,
+						"cacheExternalArtifacts": false,
+						"port": 0
+					}
+				},
+				"test": {
+					"builder": "@angular/build:unit-test"
+				},
+				"esbuild": {
+					"builder": "@angular/build:application",
+					"options": {
+						"browser": "projects/mfe2/src/main.ts",
+						"tsConfig": "projects/mfe2/tsconfig.app.json",
+						"assets": [
+							{
+								"glob": "**/*",
+								"input": "projects/mfe2/public"
+							}
+						],
+						"styles": [
+							"projects/mfe2/src/styles.css"
+						],
+						"server": "projects/mfe2/src/main.server.ts",
+						"outputMode": "server",
+						"security": {
+							"allowedHosts": ["localhost"]
+						},
+						"ssr": {
+							"entry": "projects/mfe2/src/server.ts"
+						},
+						"prerender": false,
+						"polyfills": [
+							"es-module-shims"
+						]
+					},
+					"configurations": {
+						"production": {
+							"budgets": [
+								{
+									"type": "initial",
+									"maximumWarning": "500kB",
+									"maximumError": "1MB"
+								},
+								{
+									"type": "anyComponentStyle",
+									"maximumWarning": "4kB",
+									"maximumError": "8kB"
+								}
+							],
+							"outputHashing": "all"
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve-original": {
+					"builder": "@angular/build:dev-server",
+					"configurations": {
+						"production": {
+							"buildTarget": "mfe2:esbuild:production"
+						},
+						"development": {
+							"buildTarget": "mfe2:esbuild:development"
+						}
+					},
+					"defaultConfiguration": "development",
+					"options": {
+						"port": 4202
 					}
 				}
 			}

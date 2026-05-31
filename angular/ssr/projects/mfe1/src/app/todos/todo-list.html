@@ -1,0 +1,77 @@
+<section class="todos">
+  <header class="todos__header">
+    <h1>Todos</h1>
+    <p class="todos__summary">
+      {{ activeCount() }} active · {{ completedCount() }} completed · {{ total() }} total
+    </p>
+  </header>
+
+  <form class="todos__add" [formGroup]="form" (ngSubmit)="addTodo()">
+    <label class="sr-only" for="new-todo">New todo</label>
+    <input
+      id="new-todo"
+      type="text"
+      placeholder="What needs to be done?"
+      formControlName="title"
+      autocomplete="off"
+    />
+    <button type="submit" [disabled]="form.invalid">Add</button>
+  </form>
+
+  <nav class="todos__filters" aria-label="Filter todos">
+    <a
+      routerLink="."
+      [queryParams]="{ filter: 'all' }"
+      class="todos__filter"
+      [class.is-active]="filter() === 'all'"
+      [attr.aria-current]="filter() === 'all' ? 'page' : null"
+      >All</a
+    >
+    <a
+      routerLink="."
+      [queryParams]="{ filter: 'active' }"
+      class="todos__filter"
+      [class.is-active]="filter() === 'active'"
+      [attr.aria-current]="filter() === 'active' ? 'page' : null"
+      >Active</a
+    >
+    <a
+      routerLink="."
+      [queryParams]="{ filter: 'completed' }"
+      class="todos__filter"
+      [class.is-active]="filter() === 'completed'"
+      [attr.aria-current]="filter() === 'completed' ? 'page' : null"
+      >Completed</a
+    >
+  </nav>
+
+  <ul class="todos__list" aria-live="polite">
+    @for (todo of visibleTodos(); track todo.id) {
+      <li class="todos__item" [class.is-completed]="todo.completed">
+        <input
+          type="checkbox"
+          [checked]="todo.completed"
+          (change)="toggle(todo.id)"
+          [attr.aria-label]="'Mark \'' + todo.title + '\' as ' + (todo.completed ? 'active' : 'completed')"
+        />
+        <a class="todos__title" [routerLink]="[todo.id]">{{ todo.title }}</a>
+        <button
+          type="button"
+          class="todos__delete"
+          (click)="remove(todo.id)"
+          [attr.aria-label]="'Delete ' + todo.title"
+        >
+          ✕
+        </button>
+      </li>
+    } @empty {
+      <li class="todos__empty">Nothing here. Add your first todo above.</li>
+    }
+  </ul>
+
+  @if (completedCount() > 0) {
+    <button type="button" class="todos__clear" (click)="clearCompleted()">
+      Clear completed ({{ completedCount() }})
+    </button>
+  }
+</section>
