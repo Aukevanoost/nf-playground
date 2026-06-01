@@ -4,13 +4,41 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Development server
 
-To start a local development server, run:
+To run the **full federated stack** under `ng serve` (host + both remotes), use:
 
 ```bash
-ng serve
+npm run start:dev
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+This launches all three dev servers and exits them together on `Ctrl+C`. Like
+`start:ssr`, it enforces boot order — see [`scripts/start-dev.mjs`](./scripts/start-dev.mjs).
+
+> **Boot order matters in dev too.** Under `ng serve` the host initialises
+> federation **lazily on the first remote load** (the first SSR render of a
+> federated route), once, and memoises the result. If that first render happens
+> before the remotes are serving their `remoteEntry.json`, init fails, every
+> federated region renders the `RemoteUnavailable` placeholder, and it stays that
+> way until the dev server is **restarted** (the failure is memoised; a file save
+> won't re-init). `start:dev` removes that footgun by waiting for each remote's
+> `remoteEntry.json` before starting the host. (The previous `concurrently`-based
+> `start:dev` started all three at once and couldn't gate on readiness, so an
+> early hit on the host exposed the race.)
+>
+> **`/healthz` is prod-only.** It reports `__NF_FEDERATION_STATUS__`, which only
+> the prod `--import` preload publishes; under `ng serve` there is no eager
+> federation status (init is lazy), so `/healthz` returns **503** in dev on every
+> app. Use it as a production readiness probe; gate dev startup on the remotes'
+> `remoteEntry.json` instead (which is what `start:dev` does).
+
+> **Requires the dev-SSR fix in `@angular-architects/native-federation-v4`.** A
+> version that injects the dev host-instance bridge into a *remote* without the
+> lazy/bounded init deadlocks the remote's SSR dev server (every request hangs).
+> This example assumes a build with that fix; if a fresh `npm install` pins an
+> older build and `ng serve <remote>` hangs, that's the cause.
+
+To run a single app's dev server (no federation guarantees), use `ng serve <project>`
+or the `serve:dev:*` scripts, then open `http://localhost:4200/`. The application
+reloads automatically whenever you modify source files.
 
 ## Code scaffolding
 
@@ -56,14 +84,14 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 ## Running the federated SSR servers
 
-Build everything first, then start the servers:
+Build each app, then start the servers:
 
 ```bash
-npm run build
-npm run start:all
+ng build host && ng build mfe1 && ng build mfe2
+npm run start:ssr
 ```
 
-`start:all` (see [`scripts/start-all.mjs`](./scripts/start-all.mjs)) starts the
+`start:ssr` (see [`scripts/start-all.mjs`](./scripts/start-all.mjs)) starts the
 servers **in the order they must boot** and exits them all together on `Ctrl+C`:
 
 | Server | URL |
@@ -72,13 +100,20 @@ servers **in the order they must boot** and exits them all together on `Ctrl+C`:
 | mfe1 (remote) | http://localhost:4201 |
 | mfe2 (remote) | http://localhost:4202 |
 
+Each server is launched through the SSR preload
+(`node --import @angular-architects/native-federation-v4/node-preload dist/<app>/server/server.mjs`),
+which registers the federation loader before Angular evaluates. The `serve:ssr:*` npm
+scripts (and `start:ssr`) already include this flag.
+
 **Boot order is load-bearing.** The host's `initNodeFederation` fetches each
 remote's `remoteEntry.json` over HTTP at start-up, so the **remotes must be
-listening before the host boots**. If the host starts first it cannot reach the
-remotes and every federated region renders empty — and because the route-level
-`.catch(() => RemoteUnavailable)` swallows the failure, this happens **silently,
-with no error logged**. `start:all` waits for each remote's `remoteEntry.json`
-to respond before starting the host, which removes that footgun.
+listening before the host boots**. If a remote isn't reachable at boot it is skipped
+(`strictRemoteEntry` defaults to `false`), so only *that* remote's federated regions
+render empty — and because the route-level `.catch(() => RemoteUnavailable)` swallows
+it, that is otherwise silent. The preload publishes a status on
+`globalThis.__NF_FEDERATION_STATUS__` (set `NF_REQUIRE_REMOTES` to fail readiness
+instead of rendering empty), and `start:ssr` waits for each remote's `remoteEntry.json`
+before starting the host, which removes the footgun in local dev.
 
 The remote ports (4201/4202) are pinned by
 [`projects/host/public/federation.manifest.json`](./projects/host/public/federation.manifest.json);
