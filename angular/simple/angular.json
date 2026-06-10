@@ -15,7 +15,7 @@
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
             			"tsConfig": "projects/mfe1/tsconfig.federation.json",
                         "cacheExternalArtifacts": true
@@ -32,7 +32,7 @@
 					"defaultConfiguration": "production"
 				},
 				"serve": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
 						"target": "mfe1:serve-original:development",
             			"tsConfig": "projects/mfe1/tsconfig.federation.json",
@@ -127,7 +127,7 @@
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
             			"tsConfig": "projects/mfe2/tsconfig.federation.json",
                         "cacheExternalArtifacts": true
@@ -144,7 +144,7 @@
 					"defaultConfiguration": "production"
 				},
 				"serve": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
 						"target": "mfe2:serve-original:development",
             			"tsConfig": "projects/mfe2/tsconfig.federation.json",
@@ -252,7 +252,7 @@
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
                         "cacheExternalArtifacts": false,
             			"tsConfig": "projects/host/tsconfig.federation.json",
@@ -270,7 +270,7 @@
 					"defaultConfiguration": "production"
 				},
 				"serve": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
 						"target": "host:serve-original:development",
             			"tsConfig": "projects/host/tsconfig.federation.json",
@@ -378,7 +378,7 @@
 			"prefix": "app",
 			"architect": {
 				"build": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
              			"tsConfig": "projects/mfe3/tsconfig.federation.json",
                        	"cacheExternalArtifacts": true
@@ -395,7 +395,7 @@
 					"defaultConfiguration": "production"
 				},
 				"serve": {
-					"builder": "@angular-architects/native-federation-v4:build",
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
 						"target": "mfe3:serve-original:development",
             			"tsConfig": "projects/mfe3/tsconfig.federation.json",
