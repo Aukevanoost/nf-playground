@@ -1,1 +1,10 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
 nodeLinker: 'hoisted'
+lockfileIncludeTarballUrl: true
+minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - "@topicusonderwijs/*"
