@@ -7,4 +7,5 @@ nodeLinker: 'hoisted'
 lockfileIncludeTarballUrl: true
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
-  - "@topicusonderwijs/*"
+  - "@angular-architects/*"
+  - "@softarc/*"
