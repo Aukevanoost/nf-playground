@@ -1,5 +1,26 @@
 import {withNativeFederation, shareAll} from '@angular-architects/native-federation/config';
 
+
+// export interface NativeFederationExternalConfig {
+//   singleton?: boolean;
+//   strictVersion?: boolean;
+//   requiredVersion?: string;
+//   version?: string;
+//   includeSecondaries?: 
+//     | { skip?: string | string[]; resolveGlob?: boolean; keepAll?: boolean }
+//     | boolean;
+//   platform?: 'browser' | 'node';
+//   build?: 'separate' | 'package' | 'default';
+//   chunks?: boolean;
+//   shareScope?: string;
+//   packageInfo?: {
+//     entryPoint: string;
+//     version?: string;
+//     esm?: boolean;
+//   };
+// }
+
+
 export default withNativeFederation({
 
   name: 'mfe3',
@@ -28,7 +49,7 @@ export default withNativeFederation({
     // Add further packages you don't need at runtime
   ],
   features: { 
-    denseChunking: true,
-    integrityHashes: true
+    // denseChunking: true,
+    // integrityHashes: true
   }
 });

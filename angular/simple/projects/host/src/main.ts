@@ -11,6 +11,7 @@ import {
 const manifest = {
   'team/mfe1': 'http://localhost:4201/remoteEntry.json',
   mfe2: 'http://localhost:4202/remoteEntry.json',
+  mfe5: 'http://localhost:4205/remoteEntry.json',
 };
 
 initFederation(manifest, {

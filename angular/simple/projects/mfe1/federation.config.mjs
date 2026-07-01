@@ -27,7 +27,7 @@ export default withNativeFederation({
 
   features: { 
     ignoreUnusedDeps: true, // by default now
-    denseChunking: true,
-    integrityHashes: true
+    // denseChunking: true,
+    // integrityHashes: true
   }
 });

@@ -8,7 +8,6 @@ export default withNativeFederation({
       {
         overrides: {
           '@angular/core': { singleton: true, strictVersion: true, requiredVersion: 'auto', build: 'package',  includeSecondaries: {keepAll: true}},
-
         }
       }
     ),
@@ -24,7 +23,7 @@ export default withNativeFederation({
   features: { 
     ignoreUnusedDeps: true, // by default now
     mappingVersion: true,  // by default now
-    denseChunking: true,
-    integrityHashes: true
+    // denseChunking: true,
+    // integrityHashes: true
   }
 });

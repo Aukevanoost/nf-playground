@@ -4,6 +4,7 @@ allowBuilds:
   lmdb: true
   msgpackr-extract: true
 nodeLinker: 'hoisted'
+lockfileIncludeTarballUrl: true
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
   - "@angular-architects/*"

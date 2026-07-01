@@ -1,13 +1,16 @@
-import {withNativeFederation, shareAll} from '@angular-architects/native-federation/config';
+import {withNativeFederation, shareAll} from '@angular-architects/native-federation-v4/config';
 
 export default withNativeFederation({
 
-  name: 'mfe2',
+  name: 'mfe5',
 
   exposes: {
-    './Component': './projects/mfe2/src/bootstrap.ts',
+    './Component': './projects/mfe5/src/app/app.component.ts',
+    './Bootstrap': './projects/mfe5/src/bootstrap.ts',
   },
 
+  // Ensures scoping of all dependencies on different "ng20" scope. 
+  // shareScope: "ng21",
   shared: {
     ...shareAll(
       { singleton: true, strictVersion: true, requiredVersion: 'auto', build: 'package' },
